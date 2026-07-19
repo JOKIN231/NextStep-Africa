@@ -8,105 +8,238 @@ const supabaseAnonKey = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || '';
 export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
 
 // Real Supabase Client (only initialized if variables exist)
-export const supabase = isSupabaseConfigured 
+export const supabase = isSupabaseConfigured
   ? createClient(supabaseUrl, supabaseAnonKey)
   : null;
 
 // ==========================================
-// fallback local persistence database
+// Row <-> App model mapping
+// Postgres columns are snake_case; the app's TS models are camelCase.
 // ==========================================
-const LOCAL_STORAGE_KEYS = {
-  OPPORTUNITIES: 'nextstep_opportunities',
-  BLOGS: 'nextstep_blogs',
-  SUBSCRIBERS: 'nextstep_subscribers',
+
+function rowToOpportunity(row: any): Opportunity {
+  return {
+    id: row.id,
+    title: row.title,
+    organization: row.organization,
+    opportunityType: row.opportunity_type,
+    locationType: row.location_type,
+    location: row.location,
+    description: row.description,
+    eligibility: row.eligibility,
+    benefits: row.benefits,
+    deadline: row.deadline,
+    applyUrl: row.apply_url,
+    tags: row.tags || [],
+    featured: !!row.featured,
+    publishedAt: row.published_at,
+    viewsCount: row.views_count ?? 0,
+  };
+}
+
+function opportunityToRow(opp: Opportunity) {
+  return {
+    id: opp.id,
+    title: opp.title,
+    organization: opp.organization,
+    opportunity_type: opp.opportunityType,
+    location_type: opp.locationType,
+    location: opp.location,
+    description: opp.description,
+    eligibility: opp.eligibility,
+    benefits: opp.benefits,
+    deadline: opp.deadline,
+    apply_url: opp.applyUrl,
+    tags: opp.tags,
+    featured: opp.featured,
+    published_at: opp.publishedAt,
+    views_count: opp.viewsCount,
+  };
+}
+
+function rowToBlog(row: any): BlogPost {
+  return {
+    id: row.id,
+    title: row.title,
+    slug: row.slug,
+    excerpt: row.excerpt,
+    content: row.content,
+    author: row.author,
+    category: row.category,
+    tags: row.tags || [],
+    imageUrl: row.image_url,
+    featured: !!row.featured,
+    status: row.status,
+    publishedAt: row.published_at,
+    scheduledFor: row.scheduled_for || undefined,
+    viewsCount: row.views_count ?? 0,
+    readTimeMin: row.read_time_min ?? 3,
+  };
+}
+
+function blogToRow(post: BlogPost) {
+  return {
+    id: post.id,
+    title: post.title,
+    slug: post.slug,
+    excerpt: post.excerpt,
+    content: post.content,
+    author: post.author,
+    category: post.category,
+    tags: post.tags,
+    image_url: post.imageUrl,
+    featured: post.featured,
+    status: post.status,
+    published_at: post.publishedAt,
+    scheduled_for: post.scheduledFor || null,
+    views_count: post.viewsCount,
+    read_time_min: post.readTimeMin,
+  };
+}
+
+// ==========================================
+// Local read cache
+// Opportunities/blogs are cached in localStorage purely so the UI has
+// something to paint instantly on repeat visits. Supabase is always the
+// source of truth — every mutation writes through to Supabase first, and
+// refreshOpportunities()/refreshBlogs() re-populate this cache from there.
+// ==========================================
+const CACHE_KEYS = {
+  OPPORTUNITIES: 'nextstep_cache_opportunities',
+  BLOGS: 'nextstep_cache_blogs',
   SAVED_OPPS: 'nextstep_saved_opps',
-  SESSION: 'nextstep_session',
 };
 
-// Seed mock data if empty. Let's define seeds.
-import { initialOpportunities, initialBlogs } from '../data/mockData';
+function readCache<T>(key: string): T[] {
+  const raw = localStorage.getItem(key);
+  return raw ? JSON.parse(raw) : [];
+}
+function writeCache<T>(key: string, data: T[]) {
+  localStorage.setItem(key, JSON.stringify(data));
+}
 
 export const db = {
-  getOpportunities: (): Opportunity[] => {
-    const raw = localStorage.getItem(LOCAL_STORAGE_KEYS.OPPORTUNITIES);
-    if (!raw) {
-      localStorage.setItem(LOCAL_STORAGE_KEYS.OPPORTUNITIES, JSON.stringify(initialOpportunities));
-      return initialOpportunities;
+  // ---------------- Opportunities ----------------
+  // Synchronous read of whatever was last fetched — safe to call for
+  // instant paint, but call refreshOpportunities() to get live data.
+  getOpportunities: (): Opportunity[] => readCache<Opportunity>(CACHE_KEYS.OPPORTUNITIES),
+
+  refreshOpportunities: async (): Promise<Opportunity[]> => {
+    if (!supabase) return readCache<Opportunity>(CACHE_KEYS.OPPORTUNITIES);
+    const { data, error } = await supabase
+      .from('opportunities')
+      .select('*')
+      .order('published_at', { ascending: false });
+    if (error) {
+      console.error('Failed to load opportunities:', error.message);
+      return readCache<Opportunity>(CACHE_KEYS.OPPORTUNITIES);
     }
-    return JSON.parse(raw);
+    const mapped = (data || []).map(rowToOpportunity);
+    writeCache(CACHE_KEYS.OPPORTUNITIES, mapped);
+    return mapped;
   },
 
-  saveOpportunity: (opp: Opportunity): Opportunity => {
-    const opps = db.getOpportunities();
-    const existingIndex = opps.findIndex(o => o.id === opp.id);
-    if (existingIndex > -1) {
-      opps[existingIndex] = opp;
-    } else {
-      opps.unshift(opp);
+  saveOpportunity: async (opp: Opportunity): Promise<Opportunity> => {
+    if (!supabase) throw new Error('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your Cloudflare Pages environment variables.');
+    const { data, error } = await supabase
+      .from('opportunities')
+      .upsert(opportunityToRow(opp))
+      .select()
+      .single();
+    if (error) throw error;
+    return rowToOpportunity(data);
+  },
+
+  deleteOpportunity: async (id: string): Promise<void> => {
+    if (!supabase) throw new Error('Supabase is not configured.');
+    const { error } = await supabase.from('opportunities').delete().eq('id', id);
+    if (error) throw error;
+  },
+
+  // ---------------- Blogs ----------------
+  // No status filter here on purpose — Row Level Security already scopes
+  // what comes back (anonymous visitors only ever receive published rows;
+  // a signed-in admin session receives everything, drafts included).
+  getBlogs: (): BlogPost[] => readCache<BlogPost>(CACHE_KEYS.BLOGS),
+
+  refreshBlogs: async (): Promise<BlogPost[]> => {
+    if (!supabase) return readCache<BlogPost>(CACHE_KEYS.BLOGS);
+    const { data, error } = await supabase
+      .from('blogs')
+      .select('*')
+      .order('published_at', { ascending: false });
+    if (error) {
+      console.error('Failed to load blogs:', error.message);
+      return readCache<BlogPost>(CACHE_KEYS.BLOGS);
     }
-    localStorage.setItem(LOCAL_STORAGE_KEYS.OPPORTUNITIES, JSON.stringify(opps));
-    return opp;
+    const mapped = (data || []).map(rowToBlog);
+    writeCache(CACHE_KEYS.BLOGS, mapped);
+    return mapped;
   },
 
-  deleteOpportunity: (id: string): void => {
-    const opps = db.getOpportunities();
-    const updated = opps.filter(o => o.id !== id);
-    localStorage.setItem(LOCAL_STORAGE_KEYS.OPPORTUNITIES, JSON.stringify(updated));
+  saveBlog: async (post: BlogPost): Promise<BlogPost> => {
+    if (!supabase) throw new Error('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your Cloudflare Pages environment variables.');
+    const { data, error } = await supabase
+      .from('blogs')
+      .upsert(blogToRow(post))
+      .select()
+      .single();
+    if (error) throw error;
+    return rowToBlog(data);
   },
 
-  getBlogs: (): BlogPost[] => {
-    const raw = localStorage.getItem(LOCAL_STORAGE_KEYS.BLOGS);
-    if (!raw) {
-      localStorage.setItem(LOCAL_STORAGE_KEYS.BLOGS, JSON.stringify(initialBlogs));
-      return initialBlogs;
+  deleteBlog: async (id: string): Promise<void> => {
+    if (!supabase) throw new Error('Supabase is not configured.');
+    const { error } = await supabase.from('blogs').delete().eq('id', id);
+    if (error) throw error;
+  },
+
+  // Fire-and-forget view counter — never blocks the reading experience.
+  incrementBlogViews: async (post: BlogPost): Promise<void> => {
+    if (!supabase) return;
+    await supabase.from('blogs').update({ views_count: post.viewsCount + 1 }).eq('id', post.id);
+  },
+
+  // ---------------- Newsletter ----------------
+  subscribeEmail: async (email: string): Promise<{ success: boolean; message: string }> => {
+    if (!supabase) {
+      return { success: false, message: 'Newsletter signup is temporarily unavailable.' };
     }
-    return JSON.parse(raw);
-  },
-
-  saveBlog: (post: BlogPost): BlogPost => {
-    const blogs = db.getBlogs();
-    const existingIndex = blogs.findIndex(b => b.id === post.id);
-    if (existingIndex > -1) {
-      blogs[existingIndex] = post;
-    } else {
-      blogs.unshift(post);
+    const { error } = await supabase
+      .from('subscribers')
+      .insert({ email: email.toLowerCase().trim() });
+    if (error) {
+      if (error.code === '23505') {
+        return { success: false, message: 'You are already subscribed to our newsletter!' };
+      }
+      return { success: false, message: 'Something went wrong. Please try again.' };
     }
-    localStorage.setItem(LOCAL_STORAGE_KEYS.BLOGS, JSON.stringify(blogs));
-    return post;
-  },
-
-  deleteBlog: (id: string): void => {
-    const blogs = db.getBlogs();
-    const updated = blogs.filter(b => b.id !== id);
-    localStorage.setItem(LOCAL_STORAGE_KEYS.BLOGS, JSON.stringify(updated));
-  },
-
-  getSubscribers: (): Subscriber[] => {
-    const raw = localStorage.getItem(LOCAL_STORAGE_KEYS.SUBSCRIBERS);
-    return raw ? JSON.parse(raw) : [];
-  },
-
-  subscribeEmail: (email: string): { success: boolean; message: string } => {
-    const subscribers = db.getSubscribers();
-    const exists = subscribers.some(s => s.email.toLowerCase() === email.toLowerCase() && s.status === 'active');
-    if (exists) {
-      return { success: false, message: 'You are already subscribed to our newsletter!' };
-    }
-
-    const newSub: Subscriber = {
-      id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 9),
-      email,
-      subscribedAt: new Date().toISOString(),
-      status: 'active'
-    };
-
-    subscribers.unshift(newSub);
-    localStorage.setItem(LOCAL_STORAGE_KEYS.SUBSCRIBERS, JSON.stringify(subscribers));
     return { success: true, message: 'Thank you for subscribing to NextStep Africa!' };
   },
 
+  getSubscribers: async (): Promise<Subscriber[]> => {
+    if (!supabase) return [];
+    const { data, error } = await supabase
+      .from('subscribers')
+      .select('*')
+      .order('subscribed_at', { ascending: false });
+    if (error) {
+      console.error('Failed to load subscribers:', error.message);
+      return [];
+    }
+    return (data || []).map((row: any) => ({
+      id: row.id,
+      email: row.email,
+      subscribedAt: row.subscribed_at,
+      status: row.status,
+    }));
+  },
+
+  // ---------------- Personal application tracker ----------------
+  // Deliberately local-only: there is no visitor account system, so a
+  // per-browser bookmark list is the correct behavior here, not a bug.
   getSavedOpportunities: (): SavedOpportunity[] => {
-    const raw = localStorage.getItem(LOCAL_STORAGE_KEYS.SAVED_OPPS);
+    const raw = localStorage.getItem(CACHE_KEYS.SAVED_OPPS);
     return raw ? JSON.parse(raw) : [];
   },
 
@@ -118,27 +251,13 @@ export const db = {
     } else {
       savedOpps.unshift(saved);
     }
-    localStorage.setItem(LOCAL_STORAGE_KEYS.SAVED_OPPS, JSON.stringify(savedOpps));
+    localStorage.setItem(CACHE_KEYS.SAVED_OPPS, JSON.stringify(savedOpps));
     return saved;
   },
 
   removeOpportunityFromTracker: (oppId: string): void => {
     const savedOpps = db.getSavedOpportunities();
     const updated = savedOpps.filter(s => s.opportunityId !== oppId);
-    localStorage.setItem(LOCAL_STORAGE_KEYS.SAVED_OPPS, JSON.stringify(updated));
+    localStorage.setItem(CACHE_KEYS.SAVED_OPPS, JSON.stringify(updated));
   },
-
-  // Auth helper
-  getAdminSession: (): { email: string } | null => {
-    const session = localStorage.getItem(LOCAL_STORAGE_KEYS.SESSION);
-    return session ? JSON.parse(session) : null;
-  },
-
-  loginAdmin: (email: string): void => {
-    localStorage.setItem(LOCAL_STORAGE_KEYS.SESSION, JSON.stringify({ email }));
-  },
-
-  logoutAdmin: (): void => {
-    localStorage.removeItem(LOCAL_STORAGE_KEYS.SESSION);
-  }
 };
