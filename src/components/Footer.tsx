@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
-import { Mail, CheckCircle2, AlertTriangle, FileText, Rss, ArrowUpRight } from 'lucide-react';
+import { Mail, CheckCircle2, AlertTriangle, ArrowUpRight } from 'lucide-react';
 import { db } from '../lib/supabase';
 import { motion } from 'motion/react';
 
 interface FooterProps {
   setCurrentTab: (tab: string) => void;
-  triggerRSSFeed: () => void;
-  triggerSitemap: () => void;
 }
 
-export default function Footer({ setCurrentTab, triggerRSSFeed, triggerSitemap }: FooterProps) {
+export default function Footer({ setCurrentTab }: FooterProps) {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<{ type: 'success' | 'error' | null; message: string }>({
     type: null,
@@ -60,28 +58,6 @@ export default function Footer({ setCurrentTab, triggerRSSFeed, triggerSitemap }
             <p className="text-sm text-slate-500 leading-relaxed max-w-sm">
               Empowering African students and professionals to lead the future of public health. Access fellowships, scholarships, internships, research funding, and career guidance tailored for the continent.
             </p>
-            
-            {/* Feeds Buttons */}
-            <div className="flex flex-wrap gap-3 pt-2">
-              <button
-                id="footer-rss-btn"
-                onClick={triggerRSSFeed}
-                className="flex items-center space-x-2 bg-white hover:bg-slate-100/60 text-xs text-slate-700 font-mono px-3 py-1.5 rounded-lg border border-slate-200 hover:border-brand-orange/40 transition-all cursor-pointer shadow-xs"
-              >
-                <Rss className="w-3.5 h-3.5 text-brand-orange" />
-                <span>RSS Feed</span>
-                <ArrowUpRight className="w-3 h-3 text-slate-400" />
-              </button>
-              <button
-                id="footer-sitemap-btn"
-                onClick={triggerSitemap}
-                className="flex items-center space-x-2 bg-white hover:bg-slate-100/60 text-xs text-slate-700 font-mono px-3 py-1.5 rounded-lg border border-slate-200 hover:border-brand-green/40 transition-all cursor-pointer shadow-xs"
-              >
-                <FileText className="w-3.5 h-3.5 text-brand-green" />
-                <span>XML Sitemap</span>
-                <ArrowUpRight className="w-3 h-3 text-slate-400" />
-              </button>
-            </div>
           </div>
 
           {/* Links Grid */}
@@ -201,10 +177,18 @@ export default function Footer({ setCurrentTab, triggerRSSFeed, triggerSitemap }
           <div>
             &copy; {new Date().getFullYear()} NextStep Africa. All rights reserved.
           </div>
-          <div className="flex space-x-6">
+          <div className="flex space-x-6 items-center">
             <span>Optimized for SEO & Accessibility</span>
             <span className="text-brand-orange">•</span>
             <span>Made with Care for Africa</span>
+            <span className="text-slate-300">•</span>
+            <button
+              id="footer-admin-link"
+              onClick={() => setCurrentTab('admin')}
+              className="text-slate-300 hover:text-slate-500 transition-colors cursor-pointer"
+            >
+              Team
+            </button>
           </div>
         </div>
       </div>
