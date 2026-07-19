@@ -3,6 +3,7 @@ import { db } from './lib/supabase';
 import { Opportunity, BlogPost, SavedOpportunity } from './types';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import MetricBanner from './components/MetricBanner';
 import OpportunityCard from './components/OpportunityCard';
 import BlogCard from './components/BlogCard';
 import Dashboard from './components/Dashboard';
@@ -305,6 +306,9 @@ ${blogsXML}
         }}
       />
 
+      {/* Live metrics strip — persistent across every tab, computed from real data */}
+      <MetricBanner opportunities={opportunities} loading={dataLoading} />
+
       {/* Main Body Stage Router */}
       <main className="flex-1 pb-16">
         <AnimatePresence mode="wait">
@@ -364,22 +368,6 @@ ${blogsXML}
                       >
                         Browse Gateway
                       </button>
-                    </div>
-
-                    {/* Credibility Counter Statistics */}
-                    <div className="grid grid-cols-3 gap-4 pt-6 border-t border-white/10 max-w-xl text-left font-mono">
-                      <div>
-                        <p className="text-xl sm:text-2xl font-extrabold font-display text-white">6,000+</p>
-                        <p className="text-[9px] font-bold text-blue-200 uppercase tracking-widest mt-0.5">Students Guided</p>
-                      </div>
-                      <div className="border-x border-white/10 px-4">
-                        <p className="text-xl sm:text-2xl font-extrabold font-display text-white">140+</p>
-                        <p className="text-[9px] font-bold text-blue-200 uppercase tracking-widest mt-0.5">Institutions</p>
-                      </div>
-                      <div>
-                        <p className="text-xl sm:text-2xl font-extrabold font-display text-brand-orange">54</p>
-                        <p className="text-[9px] font-bold text-blue-200 uppercase tracking-widest mt-0.5">African Nations</p>
-                      </div>
                     </div>
                   </div>
                 </section>
