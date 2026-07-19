@@ -1,16 +1,37 @@
 import { createClient } from '@supabase/supabase-js';
 import { Opportunity, BlogPost, Subscriber, SavedOpportunity } from '../types';
 
-// Read Supabase environment variables from import.meta.env
-const supabaseUrl = (import.meta as any).env?.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || '';
+// Read Supabase environment variables from import.meta.env.
+// Defensively strip accidental wrapping quotes/whitespace — a very common
+// mistake when pasting a value like VITE_SUPABASE_URL="https://..." into a
+// dashboard field that doesn't want the quote marks included.
+function cleanEnvValue(v: string | undefined): string {
+  return (v || '').trim().replace(/^["']|["']$/g, '');
+}
 
-export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
+const supabaseUrl = cleanEnvValue((import.meta as any).env?.VITE_SUPABASE_URL);
+const supabaseAnonKey = cleanEnvValue((import.meta as any).env?.VITE_SUPABASE_ANON_KEY);
 
-// Real Supabase Client (only initialized if variables exist)
-export const supabase = isSupabaseConfigured
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : null;
+export let isSupabaseConfigured = false;
+export let supabase: ReturnType<typeof createClient> | null = null;
+
+// A malformed URL/key used to throw here at module-load time and take the
+// entire app down with it (a blank white screen, with the real reason only
+// visible in a browser console the user has no way to open). Never let a
+// bad env var value do that again — fail into "not configured" instead.
+try {
+  if (supabaseUrl && supabaseAnonKey) {
+    supabase = createClient(supabaseUrl, supabaseAnonKey);
+    isSupabaseConfigured = true;
+  }
+} catch (err) {
+  console.error(
+    'Failed to initialize Supabase client. Check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in Cloudflare Pages -> Settings -> Environment variables for typos or stray quote marks:',
+    err
+  );
+  supabase = null;
+  isSupabaseConfigured = false;
+}
 
 // ==========================================
 // Row <-> App model mapping
