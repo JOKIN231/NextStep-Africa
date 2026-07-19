@@ -743,8 +743,6 @@ ${blogsXML}
           setCurrentTab(tab);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
-        triggerRSSFeed={() => setRssModalOpen(true)}
-        triggerSitemap={() => setSitemapModalOpen(true)}
       />
 
       {/* RSS compiled Modal Preview overlay */}
