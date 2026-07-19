@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, X, Compass, Search, Award, BookmarkCheck, LayoutDashboard } from 'lucide-react';
+import { Menu, X, Compass, Search, Award, BookmarkCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface NavbarProps {
@@ -16,8 +16,7 @@ export default function Navbar({ currentTab, setCurrentTab, onSearch }: NavbarPr
     { id: 'home', label: 'Home', icon: Compass },
     { id: 'opportunities', label: 'Opportunities', icon: Award },
     { id: 'blog', label: 'Insights & Blog', icon: Compass },
-    { id: 'tracker', label: 'My Career Tracker', icon: BookmarkCheck },
-    { id: 'admin', label: 'Admin Portal', icon: LayoutDashboard }
+    { id: 'tracker', label: 'My Career Tracker', icon: BookmarkCheck }
   ];
 
   const handleSearchSubmit = (e: React.FormEvent) => {
