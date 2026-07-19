@@ -1,6 +1,0 @@
-{
-  "name": "NextStep Africa",
-  "description": "A modern digital publication and opportunity directory focused on public health opportunities, fellowships, internships, and career development for students and professionals across Africa.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
