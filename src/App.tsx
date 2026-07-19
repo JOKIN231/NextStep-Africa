@@ -41,13 +41,28 @@ export default function App() {
     type: 'success'
   });
 
+  // Whether the initial Supabase fetch has completed (avoids flashing an
+  // empty state while the very first request is in flight).
+  const [dataLoading, setDataLoading] = useState(true);
+
   // Load Data on Mount
   useEffect(() => {
-    // Sync initial tables
+    // Paint instantly from whatever was cached on a previous visit...
     setOpportunities(db.getOpportunities());
     setBlogs(db.getBlogs());
-    
-    // Sync bookmarked opportunity IDs
+
+    // ...then refresh from Supabase, which is the real source of truth.
+    (async () => {
+      const [freshOpps, freshBlogs] = await Promise.all([
+        db.refreshOpportunities(),
+        db.refreshBlogs(),
+      ]);
+      setOpportunities(freshOpps);
+      setBlogs(freshBlogs);
+      setDataLoading(false);
+    })();
+
+    // Sync bookmarked opportunity IDs (visitor-local, no backend involved)
     const saved = db.getSavedOpportunities();
     setSavedOppIds(saved.map(s => s.opportunityId));
   }, []);
@@ -87,41 +102,68 @@ export default function App() {
     triggerToast(`Removed from tracker.`, 'info');
   };
 
-  // Admin mutation callbacks to trigger reactivity
-  const handleAddOpportunity = (opp: Opportunity) => {
-    db.saveOpportunity(opp);
-    setOpportunities(db.getOpportunities());
-    triggerToast('New opportunity published successfully!');
+  // Admin mutation callbacks — each writes through to Supabase first,
+  // then refreshes local state from the real data so every open tab/device
+  // stays in sync. Errors (e.g. missing RLS policy, network issue) surface
+  // as a toast instead of silently disappearing.
+  const handleAddOpportunity = async (opp: Opportunity) => {
+    try {
+      await db.saveOpportunity(opp);
+      setOpportunities(await db.refreshOpportunities());
+      triggerToast('New opportunity published successfully!');
+    } catch (err: any) {
+      triggerToast(`Failed to publish opportunity: ${err.message || err}`, 'info');
+    }
   };
 
-  const handleEditOpportunity = (opp: Opportunity) => {
-    db.saveOpportunity(opp);
-    setOpportunities(db.getOpportunities());
-    triggerToast('Opportunity requirements updated.');
+  const handleEditOpportunity = async (opp: Opportunity) => {
+    try {
+      await db.saveOpportunity(opp);
+      setOpportunities(await db.refreshOpportunities());
+      triggerToast('Opportunity requirements updated.');
+    } catch (err: any) {
+      triggerToast(`Failed to update opportunity: ${err.message || err}`, 'info');
+    }
   };
 
-  const handleDeleteOpportunity = (id: string) => {
-    db.deleteOpportunity(id);
-    setOpportunities(db.getOpportunities());
-    triggerToast('Opportunity listing removed from directory.', 'info');
+  const handleDeleteOpportunity = async (id: string) => {
+    try {
+      await db.deleteOpportunity(id);
+      setOpportunities(await db.refreshOpportunities());
+      triggerToast('Opportunity listing removed from directory.', 'info');
+    } catch (err: any) {
+      triggerToast(`Failed to delete opportunity: ${err.message || err}`, 'info');
+    }
   };
 
-  const handleAddBlog = (post: BlogPost) => {
-    db.saveBlog(post);
-    setBlogs(db.getBlogs());
-    triggerToast('New article published to Gateway Insights!');
+  const handleAddBlog = async (post: BlogPost) => {
+    try {
+      await db.saveBlog(post);
+      setBlogs(await db.refreshBlogs());
+      triggerToast('New article published to Gateway Insights!');
+    } catch (err: any) {
+      triggerToast(`Failed to publish article: ${err.message || err}`, 'info');
+    }
   };
 
-  const handleEditBlog = (post: BlogPost) => {
-    db.saveBlog(post);
-    setBlogs(db.getBlogs());
-    triggerToast('Article content updated successfully.');
+  const handleEditBlog = async (post: BlogPost) => {
+    try {
+      await db.saveBlog(post);
+      setBlogs(await db.refreshBlogs());
+      triggerToast('Article content updated successfully.');
+    } catch (err: any) {
+      triggerToast(`Failed to update article: ${err.message || err}`, 'info');
+    }
   };
 
-  const handleDeleteBlog = (id: string) => {
-    db.deleteBlog(id);
-    setBlogs(db.getBlogs());
-    triggerToast('Article removed from blog publication.', 'info');
+  const handleDeleteBlog = async (id: string) => {
+    try {
+      await db.deleteBlog(id);
+      setBlogs(await db.refreshBlogs());
+      triggerToast('Article removed from blog publication.', 'info');
+    } catch (err: any) {
+      triggerToast(`Failed to delete article: ${err.message || err}`, 'info');
+    }
   };
 
   // Build simulated RSS 2.0 Dynamic Feed XML
@@ -437,7 +479,7 @@ ${blogsXML}
                       post={post}
                       onReadPost={(p) => {
                         // View analytics counter simulated
-                        db.saveBlog({ ...p, viewsCount: p.viewsCount + 1 });
+                        db.incrementBlogViews(p).catch(() => {});
                       }}
                     />
                   ))}
@@ -536,7 +578,9 @@ ${blogsXML}
               </div>
 
               {/* Opportunity grid list */}
-              {paginatedOpps.length === 0 ? (
+              {dataLoading ? (
+                <div className="text-center py-16 text-slate-400 text-xs font-mono">Loading live opportunities...</div>
+              ) : paginatedOpps.length === 0 ? (
                 <div className="text-center py-16 bg-white border border-slate-200/60 rounded-3xl max-w-md mx-auto space-y-3">
                   <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto text-slate-400">
                     <Filter className="w-6 h-6" />
@@ -641,7 +685,7 @@ ${blogsXML}
                       key={post.id}
                       post={post}
                       onReadPost={(p) => {
-                        db.saveBlog({ ...p, viewsCount: p.viewsCount + 1 });
+                        db.incrementBlogViews(p).catch(() => {});
                       }}
                     />
                   ))}
