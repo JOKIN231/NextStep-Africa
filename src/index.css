@@ -1,11 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Space Grotesk", sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
+  /* Typography — an editorial serif for authority (public-health journal
+     register), a body face literally named for this subject, and a mono
+     face for anything that reads like a live instrument readout. */
+  --font-sans: "Public Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces", "Public Sans", serif;
+  --font-mono: "IBM Plex Mono", monospace;
 
+  /* Legacy light-theme brand colors — still used by components not yet
+     migrated to the new dark system (Phase 2/3). Do not remove until
+     every usage is gone. */
   --color-brand-orange: #F57C00;
   --color-brand-navy: #0D47A1;
   --color-brand-green: #2E7D32;
@@ -13,9 +19,23 @@
   --color-brand-navy-hover: #1A237E;
   --color-brand-green-hover: #1B5E20;
 
+  /* New dark / glassmorphism system. Named for what each color does in
+     this specific dashboard, not for the hex itself. */
+  --color-void: #0B132B;         /* primary dark background */
+  --color-void-deep: #070C1C;    /* recessed/base layer beneath cards */
+  --color-glass: #141B3A;        /* card surface tone before blur+opacity */
+  --color-amber-signal: #F0A94E; /* deadlines, urgency, metrics */
+  --color-amber-signal-hover: #E0964A;
+  --color-pulse: #34D399;        /* live/active/growth state */
+  --color-pulse-hover: #22B889;
+  --color-glow-indigo: #818CF8;  /* featured/premium accents & glows */
+  --color-frost: #F1F5F9;        /* primary text on dark surfaces */
+  --color-frost-dim: #94A3B8;    /* secondary text on dark surfaces */
+
   --animate-fade-in: fade-in 0.3s ease-out;
   --animate-slide-up: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-pulse-line: pulse-line 2.8s ease-in-out infinite;
 }
 
 @keyframes fade-in {
@@ -26,6 +46,23 @@
 @keyframes slide-up {
   from { transform: translateY(12px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+}
+
+/* The signature motif: a soft highlight traveling along a hairline, the
+   way a trace moves across a vitals monitor. Used sparingly — one place
+   per screen at most. Respects reduced-motion below. */
+@keyframes pulse-line {
+  0% { transform: translateX(-100%); opacity: 0; }
+  15% { opacity: 1; }
+  50% { transform: translateX(0%); opacity: 1; }
+  85% { opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-line, [class*="animate-pulse"] {
+    animation: none !important;
+  }
 }
 
 body {
