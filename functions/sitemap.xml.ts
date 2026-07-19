@@ -1,0 +1,68 @@
+// Cloudflare Pages Function — serves a live sitemap.xml at
+// https://your-site.pages.dev/sitemap.xml (or your custom domain), built
+// fresh from Supabase on every request. This is what you submit to Google
+// Search Console — not the "Build & Inspect" preview in the admin panel,
+// which only renders a copy in your browser and isn't reachable by crawlers.
+//
+// Reuses the same VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY environment
+// variables you already set for the app build — Cloudflare Pages exposes
+// them to Functions at request time too, no extra setup needed.
+
+export const onRequest = async (context: any) => {
+  const supabaseUrl = context.env.VITE_SUPABASE_URL;
+  const supabaseAnonKey = context.env.VITE_SUPABASE_ANON_KEY;
+  const siteUrl = new URL(context.request.url).origin;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return new Response('Supabase is not configured for this deployment.', { status: 500 });
+  }
+
+  const headers = { apikey: supabaseAnonKey, Authorization: `Bearer ${supabaseAnonKey}` };
+
+  const [oppsRes, blogsRes] = await Promise.all([
+    fetch(`${supabaseUrl}/rest/v1/opportunities?select=id,published_at`, { headers }),
+    fetch(`${supabaseUrl}/rest/v1/blogs?select=slug,published_at&status=eq.published`, { headers }),
+  ]);
+
+  const opps: any[] = oppsRes.ok ? await oppsRes.json() : [];
+  const blogPosts: any[] = blogsRes.ok ? await blogsRes.json() : [];
+
+  const staticEntries = [
+    { loc: siteUrl, changefreq: 'daily', priority: '1.0' },
+    { loc: `${siteUrl}/?tab=opportunities`, changefreq: 'daily', priority: '0.8' },
+    { loc: `${siteUrl}/?tab=blog`, changefreq: 'weekly', priority: '0.7' },
+  ]
+    .map(
+      (u) => `  <url>
+    <loc>${u.loc}</loc>
+    <changefreq>${u.changefreq}</changefreq>
+    <priority>${u.priority}</priority>
+  </url>`
+    )
+    .join('\n');
+
+  const blogEntries = blogPosts
+    .map(
+      (b) => `  <url>
+    <loc>${siteUrl}/?blogSlug=${b.slug}</loc>
+    <lastmod>${(b.published_at || '').split('T')[0]}</lastmod>
+    <changefreq>monthly</changefreq>
+  </url>`
+    )
+    .join('\n');
+
+  // Opportunities don't have their own detail route in this app yet (they
+  // link out to apply_url), so they're left out of the sitemap on purpose —
+  // only include real, indexable pages.
+  void opps;
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${staticEntries}
+${blogEntries}
+</urlset>`;
+
+  return new Response(xml, {
+    headers: { 'Content-Type': 'application/xml; charset=utf-8' },
+  });
+};
