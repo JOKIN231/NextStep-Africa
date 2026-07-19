@@ -16,14 +16,18 @@ export default function Footer({ setCurrentTab, triggerRSSFeed, triggerSitemap }
     message: ''
   });
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !email.includes('@')) {
       setStatus({ type: 'error', message: 'Please enter a valid email address.' });
       return;
     }
 
-    const response = db.subscribeEmail(email);
+    setSubmitting(true);
+    const response = await db.subscribeEmail(email);
+    setSubmitting(false);
     if (response.success) {
       setStatus({ type: 'success', message: response.message });
       setEmail('');
@@ -161,9 +165,10 @@ export default function Footer({ setCurrentTab, triggerRSSFeed, triggerSitemap }
                 <button
                   id="newsletter-submit-btn"
                   type="submit"
-                  className="bg-brand-orange hover:bg-brand-orange-hover text-white text-xs font-bold px-4 py-2.5 rounded-lg transition-all shadow-xs flex items-center justify-center cursor-pointer"
+                  disabled={submitting}
+                  className="bg-brand-orange hover:bg-brand-orange-hover text-white text-xs font-bold px-4 py-2.5 rounded-lg transition-all shadow-xs flex items-center justify-center cursor-pointer disabled:opacity-50"
                 >
-                  Join
+                  {submitting ? '...' : 'Join'}
                 </button>
               </div>
 

@@ -83,49 +83,50 @@ export default function AdminPortal({
   const [blogTagInput, setBlogTagInput] = useState('');
 
   useEffect(() => {
-    // Check local session
-    const session = db.getAdminSession();
-    if (session) {
-      setIsLoggedIn(true);
-    }
-    setSubscribers(db.getSubscribers());
+    // Real Supabase Auth session — not a client-side flag, so it can't be
+    // spoofed by editing localStorage, and it's what Row Level Security
+    // actually checks on every read/write.
+    if (!supabase) return;
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsLoggedIn(!!session);
+      if (session) db.getSubscribers().then(setSubscribers);
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session);
+      if (session) db.getSubscribers().then(setSubscribers);
+    });
+
+    return () => listener.subscription.unsubscribe();
   }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError('');
-    setSubmitting(true);
 
-    if (isSupabaseConfigured && supabase) {
-      try {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) {
-          setAuthError(error.message);
-        } else {
-          db.loginAdmin(email);
-          setIsLoggedIn(true);
-        }
-      } catch (err) {
-        setAuthError('Authentication failed. Check your network or credentials.');
-      } finally {
-        setSubmitting(false);
+    if (!supabase) {
+      setAuthError('Supabase is not configured on this deployment. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY as environment variables in Cloudflare Pages, then redeploy.');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        setAuthError(error.message);
+      } else {
+        setIsLoggedIn(true);
       }
-    } else {
-      // simulated credential fallback
-      setTimeout(() => {
-        if (email.toLowerCase() === 'admin@nextstepafrica.com' && password === 'admin123') {
-          db.loginAdmin(email);
-          setIsLoggedIn(true);
-        } else {
-          setAuthError('Invalid credentials. Use admin@nextstepafrica.com / admin123 for sandbox access.');
-        }
-        setSubmitting(false);
-      }, 500);
+    } catch (err) {
+      setAuthError('Authentication failed. Check your network or credentials.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  const handleLogout = () => {
-    db.logoutAdmin();
+  const handleLogout = async () => {
+    if (supabase) await supabase.auth.signOut();
     setIsLoggedIn(false);
   };
 
@@ -134,7 +135,7 @@ export default function AdminPortal({
     e.preventDefault();
     const tagsArray = tagInput.split(',').map(t => t.trim()).filter(Boolean);
     const finalOpp: Opportunity = {
-      id: editingOppId || `opp-${Date.now()}`,
+      id: editingOppId || (crypto.randomUUID ? crypto.randomUUID() : `opp-${Date.now()}`),
       ...oppForm,
       tags: tagsArray.length > 0 ? tagsArray : oppForm.tags,
       publishedAt: new Date().toISOString(),
@@ -192,7 +193,7 @@ export default function AdminPortal({
     const generatedSlug = blogForm.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     
     const finalPost: BlogPost = {
-      id: editingBlogId || `blog-${Date.now()}`,
+      id: editingBlogId || (crypto.randomUUID ? crypto.randomUUID() : `blog-${Date.now()}`),
       ...blogForm,
       slug: blogForm.slug || generatedSlug,
       tags: tagsArray.length > 0 ? tagsArray : blogForm.tags,
@@ -280,11 +281,12 @@ export default function AdminPortal({
             )}
 
             {!isSupabaseConfigured && (
-              <div className="bg-blue-50 border border-blue-100 text-blue-800 text-[10px] p-3 rounded-xl font-mono leading-normal">
-                <p className="font-bold mb-1">🔧 SANDBOX DEMO FALLBACK ONLINE</p>
-                To test the admin suite, use credentials:<br />
-                Email: <span className="font-bold underline text-brand-orange">admin@nextstepafrica.com</span><br />
-                Password: <span className="font-bold underline text-brand-orange">admin123</span>
+              <div className="bg-amber-50 border border-amber-200 text-amber-900 text-[11px] p-3 rounded-xl leading-normal">
+                <p className="font-bold mb-1">⚠️ Supabase is not configured</p>
+                Add <code className="font-mono">VITE_SUPABASE_URL</code> and{' '}
+                <code className="font-mono">VITE_SUPABASE_ANON_KEY</code> as environment
+                variables in your Cloudflare Pages project settings, then redeploy. No
+                admin login is possible until this is set.
               </div>
             )}
 
