@@ -3,6 +3,7 @@ import { Calendar, MapPin, Tag, Share2, Bookmark, BookmarkCheck, ExternalLink, G
 import { Opportunity, SavedOpportunity } from '../types';
 import { db } from '../lib/supabase';
 import { motion, AnimatePresence } from 'motion/react';
+import SmartImage from './SmartImage';
 
 interface OpportunityCardProps {
   key?: string;
@@ -74,6 +75,15 @@ export default function OpportunityCard({ opportunity, isSaved, onToggleSave, on
         whileHover={{ y: -6, boxShadow: '0 16px 32px -12px rgba(13, 71, 161, 0.12)' }}
         className="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col justify-between relative transition-all duration-350 overflow-hidden hover:border-brand-navy/40"
       >
+        {/* Image Banner */}
+        <SmartImage
+          src={opportunity.imageUrl}
+          seed={opportunity.id}
+          category={opportunity.opportunityType}
+          alt={opportunity.title}
+          className="-mx-6 -mt-6 mb-4 h-36 rounded-t-2xl"
+        />
+
         {/* Top Header Row */}
         <div>
           <div className="flex justify-between items-start gap-4 mb-4">
@@ -201,6 +211,15 @@ export default function OpportunityCard({ opportunity, isSaved, onToggleSave, on
               exit={{ opacity: 0, scale: 0.95 }}
               className="bg-white rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-2xl border border-slate-100 flex flex-col"
             >
+              {/* Hero Image */}
+              <SmartImage
+                src={opportunity.imageUrl}
+                seed={opportunity.id}
+                category={opportunity.opportunityType}
+                alt={opportunity.title}
+                className="h-44 sm:h-56 shrink-0 rounded-t-2xl"
+              />
+
               {/* Header */}
               <div className="p-6 border-b border-slate-100 sticky top-0 bg-white z-10 flex justify-between items-start gap-4">
                 <div>

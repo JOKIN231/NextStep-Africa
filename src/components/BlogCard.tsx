@@ -3,6 +3,7 @@ import { Calendar, User, Clock, ArrowRight, X, Facebook, Twitter, Linkedin, Link
 import { BlogPost } from '../types';
 import { db } from '../lib/supabase';
 import { motion, AnimatePresence } from 'motion/react';
+import SmartImage from './SmartImage';
 
 interface BlogCardProps {
   key?: string;
@@ -96,12 +97,12 @@ export default function BlogCard({ post, onReadPost, onTagClick }: BlogCardProps
         <div>
           {/* Cover Image */}
           <div className="relative h-48 overflow-hidden bg-slate-100">
-            <img
-              id={`blog-image-${post.id}`}
+            <SmartImage
               src={post.imageUrl}
+              seed={post.id}
+              category={post.category}
               alt={post.title}
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              className="w-full h-full group-hover:scale-105 transition-transform duration-500"
             />
             <div className="absolute top-4 left-4">
               <span
@@ -238,12 +239,13 @@ export default function BlogCard({ post, onReadPost, onTagClick }: BlogCardProps
                 </div>
 
                 {/* Featured Image */}
-                <div className="rounded-2xl overflow-hidden h-64 md:h-80 bg-slate-100 border border-slate-100 shadow-sm">
-                  <img
+                <div className="rounded-2xl overflow-hidden h-64 md:h-80 border border-slate-100 shadow-sm">
+                  <SmartImage
                     src={post.imageUrl}
+                    seed={post.id}
+                    category={post.category}
                     alt={post.title}
-                    referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full"
                   />
                 </div>
 

@@ -60,6 +60,7 @@ export default function AdminPortal({
     applyUrl: '',
     tags: [],
     featured: false,
+    imageUrl: '',
   });
   const [tagInput, setTagInput] = useState('');
 
@@ -163,6 +164,7 @@ export default function AdminPortal({
       applyUrl: '',
       tags: [],
       featured: false,
+      imageUrl: '',
     });
     setTagInput('');
   };
@@ -182,6 +184,7 @@ export default function AdminPortal({
       applyUrl: opp.applyUrl,
       tags: opp.tags,
       featured: opp.featured,
+      imageUrl: opp.imageUrl || '',
     });
     setTagInput(opp.tags.join(', '));
   };
@@ -529,6 +532,18 @@ export default function AdminPortal({
               </div>
 
               <div className="space-y-1 text-xs">
+                <label className="font-bold text-slate-500">Cover Image URL (optional)</label>
+                <input
+                  id="opp-image-url"
+                  type="url"
+                  placeholder="https://images.unsplash.com/... — leave blank to auto-use a themed placeholder"
+                  value={oppForm.imageUrl}
+                  onChange={(e) => setOppForm({ ...oppForm, imageUrl: e.target.value })}
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2"
+                />
+              </div>
+
+              <div className="space-y-1 text-xs">
                 <label className="font-bold text-slate-500">Keywords / Tags (Comma separated)</label>
                 <input
                   id="opp-tags-input"
@@ -571,6 +586,7 @@ export default function AdminPortal({
                         applyUrl: '',
                         tags: [],
                         featured: false,
+                        imageUrl: '',
                       });
                       setTagInput('');
                     }}
