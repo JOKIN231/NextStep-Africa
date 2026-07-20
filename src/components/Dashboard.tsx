@@ -84,7 +84,8 @@ export default function Dashboard({ opportunities, onRemoveBookmark, setCurrentT
   };
 
   return (
-    <div id="tracker-dashboard" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 animate-fade-in">
+    <div id="tracker-dashboard" className="bg-slate-50 -mt-px">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 animate-fade-in">
       {/* Welcome Banner */}
       <div className="bg-brand-navy rounded-3xl p-6 md:p-8 text-white relative overflow-hidden shadow-lg border border-brand-navy">
         <div className="absolute top-0 right-0 p-4 opacity-10">
@@ -303,6 +304,7 @@ export default function Dashboard({ opportunities, onRemoveBookmark, setCurrentT
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 }

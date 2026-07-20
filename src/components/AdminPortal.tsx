@@ -265,7 +265,8 @@ export default function AdminPortal({
 
   if (!isLoggedIn) {
     return (
-      <div id="admin-login-screen" className="max-w-md mx-auto px-4 py-16 animate-fade-in">
+      <div id="admin-login-screen" className="bg-slate-50 -mt-px py-16">
+      <div className="max-w-md mx-auto px-4 animate-fade-in">
         <div className="bg-white border border-slate-200 rounded-3xl shadow-xl overflow-hidden">
           <div className="bg-brand-navy p-6 text-white text-center">
             <div className="w-12 h-12 rounded-xl bg-brand-orange flex items-center justify-center mx-auto text-white font-display font-bold text-lg shadow-md mb-3">
@@ -331,11 +332,13 @@ export default function AdminPortal({
           </form>
         </div>
       </div>
+      </div>
     );
   }
 
   return (
-    <div id="admin-dashboard-layout" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 animate-fade-in">
+    <div id="admin-dashboard-layout" className="bg-slate-50 -mt-px">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 animate-fade-in">
       {/* Top Banner Row */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white border border-slate-200/80 p-5 rounded-2xl shadow-xs">
         <div className="flex items-center space-x-3">
@@ -1099,6 +1102,7 @@ export default function AdminPortal({
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }
