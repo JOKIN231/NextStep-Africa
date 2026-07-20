@@ -6,6 +6,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import MetricBanner from './components/MetricBanner';
 import InstallPrompt from './components/InstallPrompt';
+import FilterPanel from './components/FilterPanel';
 import OpportunityCard from './components/OpportunityCard';
 import BlogCard from './components/BlogCard';
 import Dashboard from './components/Dashboard';
@@ -42,6 +43,8 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [oppTypeFilter, setOppTypeFilter] = useState<string>('All');
   const [locationTypeFilter, setLocationTypeFilter] = useState<string>('All');
+  const [regionFilter, setRegionFilter] = useState<string>('');
+  const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   const [blogCategoryFilter, setBlogCategoryFilter] = useState<string>('All');
 
   // Pagination
@@ -259,8 +262,9 @@ ${blogsXML}
 
     const matchesType = oppTypeFilter === 'All' || opp.opportunityType === oppTypeFilter;
     const matchesLoc = locationTypeFilter === 'All' || opp.locationType === locationTypeFilter;
+    const matchesRegion = regionFilter.trim() === '' || opp.location.toLowerCase().includes(regionFilter.trim().toLowerCase());
 
-    return matchesSearch && matchesType && matchesLoc;
+    return matchesSearch && matchesType && matchesLoc && matchesRegion;
   });
 
   // Filter logic for Blogs page
@@ -284,7 +288,7 @@ ${blogsXML}
   );
 
   return (
-    <div id="nextstep-africa-app" className="min-h-screen flex flex-col justify-between bg-[#F8FAFC]">
+    <div id="nextstep-africa-app" className="min-h-screen flex flex-col justify-between bg-void-deep">
       {/* Dynamic Toast banner */}
       <AnimatePresence>
         {toast.show && (
@@ -343,27 +347,27 @@ ${blogsXML}
             >
               {/* Premium Hero Section */}
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-                <section className="relative overflow-hidden bg-brand-navy rounded-3xl py-12 px-6 sm:px-12 text-left text-white shadow-lg border border-brand-navy">
-                  <div className="absolute right-0 bottom-0 top-0 w-1/3 opacity-10 bg-radial-[circle_600px_at_100%_50%] from-white via-transparent to-transparent pointer-events-none hidden md:block"></div>
+                <section className="relative overflow-hidden bg-glass/60 backdrop-blur-md rounded-3xl py-12 px-6 sm:px-12 text-left shadow-2xl shadow-indigo-500/10 border border-white/10">
+                  <div className="absolute right-0 bottom-0 top-0 w-1/3 opacity-20 bg-radial-[circle_600px_at_100%_50%] from-glow-indigo/30 via-transparent to-transparent pointer-events-none hidden md:block"></div>
                   
                   <div className="max-w-3xl space-y-6 relative z-10">
-                    <div className="inline-flex items-center space-x-1.5 bg-brand-green px-3 py-1 rounded-full text-[10px] font-mono font-extrabold tracking-widest text-white uppercase shadow-xs">
+                    <div className="inline-flex items-center space-x-1.5 bg-pulse/15 border border-pulse/25 px-3 py-1 rounded-full text-[10px] font-mono font-extrabold tracking-widest text-pulse uppercase">
                       <Sparkles className="w-3.5 h-3.5 animate-pulse" />
                       <span>Featured Gateway</span>
                     </div>
 
-                    <h1 className="font-display font-extrabold text-3xl sm:text-5xl text-white tracking-tight leading-tight max-w-2xl">
-                      Opportunities for the Next Generation of <span className="text-brand-orange">African Health Leaders</span>
+                    <h1 className="font-display font-extrabold text-3xl sm:text-5xl text-frost tracking-tight leading-tight max-w-2xl">
+                      Opportunities for the Next Generation of <span className="text-amber-signal">African Health Leaders</span>
                     </h1>
 
-                    <p className="text-xs sm:text-sm text-blue-100 max-w-xl leading-relaxed font-medium">
+                    <p className="text-xs sm:text-sm text-frost-dim max-w-xl leading-relaxed font-medium">
                       Access fully funded fellowships, scholarships, internships, and research grants at Africa CDC, WHO, and global health organizations. Built specifically for African students and professionals.
                     </p>
 
                     {/* Main Hero Directory search box */}
-                    <div className="max-w-xl bg-white/95 backdrop-blur-xs p-1.5 rounded-2xl shadow-lg flex flex-col sm:flex-row gap-2">
+                    <div className="max-w-xl bg-white/5 backdrop-blur-xs border border-white/10 p-1.5 rounded-2xl shadow-lg flex flex-col sm:flex-row gap-2">
                       <div className="flex-1 flex items-center space-x-2 px-3 py-1.5">
-                        <Search className="w-5 h-5 text-slate-400 shrink-0" />
+                        <Search className="w-5 h-5 text-frost-dim shrink-0" />
                         <input
                           id="hero-search-input"
                           type="text"
@@ -375,13 +379,13 @@ ${blogsXML}
                               setCurrentTab('opportunities');
                             }
                           }}
-                          className="w-full text-xs bg-transparent border-none focus:outline-hidden text-slate-800 placeholder-slate-400 font-medium"
+                          className="w-full text-xs bg-transparent border-none focus:outline-hidden text-frost placeholder-frost-dim/70 font-medium"
                         />
                       </div>
                       <button
                         id="hero-search-btn"
                         onClick={() => setCurrentTab('opportunities')}
-                        className="bg-brand-orange hover:bg-brand-orange-hover text-white font-extrabold text-xs px-6 py-3 rounded-xl cursor-pointer transition-all shadow-xs shrink-0"
+                        className="bg-amber-signal hover:bg-amber-signal-hover text-void font-extrabold text-xs px-6 py-3 rounded-xl cursor-pointer transition-all duration-300 ease-out shadow-xs shrink-0 active:scale-95"
                       >
                         Browse Gateway
                       </button>
@@ -393,18 +397,18 @@ ${blogsXML}
               {/* Six Visual Hub Category Pills */}
               <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
                 <div className="text-center md:text-left">
-                  <h2 className="font-display font-extrabold text-xl text-brand-navy tracking-tight">Explore opportunities by Type</h2>
-                  <p className="text-xs text-slate-400">Discover programs specifically designed for your career step.</p>
+                  <h2 className="font-display font-extrabold text-xl text-frost tracking-tight">Explore opportunities by Type</h2>
+                  <p className="text-xs text-frost-dim">Discover programs specifically designed for your career step.</p>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
                   {[
-                    { type: 'Fellowship', label: 'Fellowships', desc: 'Mid-career & leadership', color: 'border-l-4 border-brand-navy' },
-                    { type: 'Internship', label: 'Internships', desc: 'WHO & Africa regional hubs', color: 'border-l-4 border-brand-green' },
-                    { type: 'Funding', label: 'Research Funding', desc: 'Malaria & disease grants', color: 'border-l-4 border-cyan-500' },
-                    { type: 'Scholarship', label: 'Scholarships', desc: 'Postgrad & Masters support', color: 'border-l-4 border-purple-500' },
-                    { type: 'Job', label: 'Jobs & Careers', desc: 'Ministry & NGO placements', color: 'border-l-4 border-amber-500' },
-                    { type: 'Conference', label: 'Conferences', desc: 'Youth advocacy summits', color: 'border-l-4 border-rose-500' }
+                    { type: 'Fellowship', label: 'Fellowships', desc: 'Mid-career & leadership', color: 'border-l-4 border-pulse' },
+                    { type: 'Internship', label: 'Internships', desc: 'WHO & Africa regional hubs', color: 'border-l-4 border-glow-indigo' },
+                    { type: 'Funding', label: 'Research Funding', desc: 'Malaria & disease grants', color: 'border-l-4 border-cyan-400' },
+                    { type: 'Scholarship', label: 'Scholarships', desc: 'Postgrad & Masters support', color: 'border-l-4 border-purple-400' },
+                    { type: 'Job', label: 'Jobs & Careers', desc: 'Ministry & NGO placements', color: 'border-l-4 border-amber-signal' },
+                    { type: 'Conference', label: 'Conferences', desc: 'Youth advocacy summits', color: 'border-l-4 border-rose-400' }
                   ].map((cat, i) => (
                     <div
                       id={`home-cat-card-${i}`}
@@ -413,10 +417,10 @@ ${blogsXML}
                         setOppTypeFilter(cat.type);
                         setCurrentTab('opportunities');
                       }}
-                      className={`bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs hover:border-brand-orange/30 hover:-translate-y-1 cursor-pointer transition-all ${cat.color} text-left flex flex-col justify-between h-28`}
+                      className={`bg-glass/50 backdrop-blur-md rounded-2xl p-4 border border-white/10 hover:border-white/25 hover:-translate-y-1 cursor-pointer transition-all duration-300 ease-out ${cat.color} text-left flex flex-col justify-between h-28`}
                     >
-                      <h3 className="font-display font-extrabold text-sm text-brand-navy leading-snug">{cat.label}</h3>
-                      <p className="text-[10px] text-slate-400 font-semibold leading-relaxed line-clamp-2 mt-2">{cat.desc}</p>
+                      <h3 className="font-display font-extrabold text-sm text-frost leading-snug">{cat.label}</h3>
+                      <p className="text-[10px] text-frost-dim font-semibold leading-relaxed line-clamp-2 mt-2">{cat.desc}</p>
                     </div>
                   ))}
                 </div>
@@ -424,13 +428,13 @@ ${blogsXML}
 
               {/* Outstanding Featured Listings section */}
               <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-3">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-3">
                   <div className="text-left">
-                    <h2 className="font-display font-extrabold text-xl text-brand-navy tracking-tight flex items-center">
-                      <Award className="w-5 h-5 mr-2 text-brand-orange" />
+                    <h2 className="font-display font-extrabold text-xl text-frost tracking-tight flex items-center">
+                      <Award className="w-5 h-5 mr-2 text-amber-signal" />
                       Featured Opportunities
                     </h2>
-                    <p className="text-xs text-slate-400 mt-0.5">Selected highly funded programs with upcoming deadlines.</p>
+                    <p className="text-xs text-frost-dim mt-0.5">Selected highly funded programs with upcoming deadlines.</p>
                   </div>
                   <button
                     id="featured-see-all"
@@ -438,7 +442,7 @@ ${blogsXML}
                       setOppTypeFilter('All');
                       setCurrentTab('opportunities');
                     }}
-                    className="text-xs font-bold text-brand-navy hover:text-brand-orange transition-colors flex items-center cursor-pointer"
+                    className="text-xs font-bold text-frost hover:text-pulse transition-colors duration-300 flex items-center cursor-pointer"
                   >
                     <span>View all opportunities</span>
                     <ChevronRight className="w-4 h-4 ml-0.5" />
@@ -504,95 +508,67 @@ ${blogsXML}
               className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 animate-fade-in"
             >
               <div className="text-left space-y-1">
-                <h1 className="font-display font-extrabold text-2xl text-brand-navy">Opportunities Directory</h1>
-                <p className="text-xs text-slate-400">Search and filter active programs across international health agencies.</p>
+                <h1 className="font-display font-extrabold text-2xl text-frost">Opportunities Directory</h1>
+                <p className="text-xs text-frost-dim">Search and filter active programs across international health agencies.</p>
               </div>
 
-              {/* Horizontal filters */}
-              <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-xs flex flex-col md:flex-row gap-4 justify-between items-center text-xs">
-                {/* Search query box inside directory */}
-                <div className="relative w-full md:w-80">
-                  <Search className="absolute left-3 top-2.5 w-4.5 h-4.5 text-slate-400" />
+              {/* Search + Filters trigger */}
+              <div className="bg-glass/50 backdrop-blur-md border border-white/10 p-4 rounded-2xl flex flex-col md:flex-row gap-3 justify-between items-center text-xs">
+                <div className="relative w-full md:flex-1">
+                  <Search className="absolute left-3 top-2.5 w-4.5 h-4.5 text-frost-dim" />
                   <input
                     id="directory-search-input"
                     type="text"
                     placeholder="Search titles, skills, keywords..."
                     value={searchQuery}
                     onChange={(e) => { setSearchQuery(e.target.value); setOppPage(1); }}
-                    className="w-full bg-slate-100 border-none rounded-lg py-2 pl-9 pr-3 text-slate-700 focus:outline-hidden focus:ring-1 focus:ring-brand-navy"
+                    className="w-full bg-white/5 border border-white/10 rounded-lg py-2 pl-9 pr-3 text-frost placeholder-frost-dim/60 focus:outline-hidden focus:ring-1 focus:ring-amber-signal/50 focus:border-amber-signal/50 transition-all duration-300 ease-out"
                   />
                 </div>
 
-                {/* Filters Row */}
-                <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-end">
-                  <div className="flex items-center space-x-1.5">
-                    <span className="text-slate-400 font-bold font-mono uppercase">Category:</span>
-                    <select
-                      id="directory-category-filter"
-                      value={oppTypeFilter}
-                      onChange={(e) => { setOppTypeFilter(e.target.value); setOppPage(1); }}
-                      className="bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-semibold px-2 py-1.5 rounded-md focus:outline-hidden"
-                    >
-                      <option value="All">All Categories</option>
-                      <option value="Fellowship">Fellowship</option>
-                      <option value="Internship">Internship</option>
-                      <option value="Job">Job</option>
-                      <option value="Funding">Funding / Grant</option>
-                      <option value="Scholarship">Scholarship</option>
-                      <option value="Conference">Conference</option>
-                    </select>
-                  </div>
-
-                  <div className="flex items-center space-x-1.5">
-                    <span className="text-slate-400 font-bold font-mono uppercase">Location:</span>
-                    <select
-                      id="directory-location-filter"
-                      value={locationTypeFilter}
-                      onChange={(e) => { setLocationTypeFilter(e.target.value); setOppPage(1); }}
-                      className="bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-semibold px-2 py-1.5 rounded-md focus:outline-hidden"
-                    >
-                      <option value="All">All Settings</option>
-                      <option value="Remote">Remote Only</option>
-                      <option value="Hybrid">Hybrid</option>
-                      <option value="On-site">On-site only</option>
-                    </select>
-                  </div>
-
-                  {/* Reset button */}
-                  {(oppTypeFilter !== 'All' || locationTypeFilter !== 'All' || searchQuery !== '') && (
-                    <button
-                      id="directory-reset-btn"
-                      onClick={() => {
-                        setOppTypeFilter('All');
-                        setLocationTypeFilter('All');
-                        setSearchQuery('');
-                        setOppPage(1);
-                      }}
-                      className="text-brand-orange hover:text-brand-orange-hover font-bold flex items-center space-x-1 cursor-pointer"
-                    >
-                      <RefreshCw className="w-3.5 h-3.5" />
-                      <span>Clear All</span>
-                    </button>
+                <button
+                  id="open-filter-panel-btn"
+                  onClick={() => setFilterPanelOpen(true)}
+                  className="w-full md:w-auto flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-frost text-xs font-bold px-4 py-2 rounded-lg transition-all duration-300 ease-out cursor-pointer active:scale-95 shrink-0"
+                >
+                  <Filter className="w-3.5 h-3.5" />
+                  <span>Filters</span>
+                  {(oppTypeFilter !== 'All' || locationTypeFilter !== 'All' || regionFilter.trim() !== '') && (
+                    <span className="w-4 h-4 rounded-full bg-pulse text-void text-[9px] font-extrabold flex items-center justify-center">
+                      {[oppTypeFilter !== 'All', locationTypeFilter !== 'All', regionFilter.trim() !== ''].filter(Boolean).length}
+                    </span>
                   )}
-                </div>
+                </button>
               </div>
 
+              <FilterPanel
+                open={filterPanelOpen}
+                onClose={() => setFilterPanelOpen(false)}
+                oppTypeFilter={oppTypeFilter}
+                setOppTypeFilter={(v) => { setOppTypeFilter(v); setOppPage(1); }}
+                locationTypeFilter={locationTypeFilter}
+                setLocationTypeFilter={(v) => { setLocationTypeFilter(v); setOppPage(1); }}
+                regionFilter={regionFilter}
+                setRegionFilter={(v) => { setRegionFilter(v); setOppPage(1); }}
+                resultCount={filteredOpps.length}
+              />
+
               {/* Counters */}
-              <div className="text-left text-xs font-mono font-bold text-slate-400">
+              <div className="text-left text-xs font-mono font-bold text-frost-dim">
                 SHOWING {filteredOpps.length} OPPORTUNITIES MATCHING CRITERIA
               </div>
 
               {/* Opportunity grid list */}
               {dataLoading ? (
-                <div className="text-center py-16 text-slate-400 text-xs font-mono">Loading live opportunities...</div>
+                <div className="text-center py-16 text-frost-dim text-xs font-mono">Loading live opportunities...</div>
               ) : paginatedOpps.length === 0 ? (
-                <div className="text-center py-16 bg-white border border-slate-200/60 rounded-3xl max-w-md mx-auto space-y-3">
-                  <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto text-slate-400">
+                <div className="text-center py-16 bg-glass/40 backdrop-blur-md border border-white/10 rounded-3xl max-w-md mx-auto space-y-3">
+                  <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mx-auto text-frost-dim">
                     <Filter className="w-6 h-6" />
                   </div>
                   <div>
-                    <h4 className="font-display font-bold text-slate-800 text-sm">No results match your criteria</h4>
-                    <p className="text-slate-400 text-[11px] leading-relaxed mt-1">Try resetting the drop-down filters or expanding your spelling search keyword.</p>
+                    <h4 className="font-display font-bold text-frost text-sm">No results match your criteria</h4>
+                    <p className="text-frost-dim text-[11px] leading-relaxed mt-1">Try resetting the filters or expanding your search keyword.</p>
                   </div>
                 </div>
               ) : (
@@ -615,13 +591,13 @@ ${blogsXML}
                         id="prev-page-btn"
                         onClick={() => setOppPage(prev => Math.max(1, prev - 1))}
                         disabled={oppPage === 1}
-                        className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg font-semibold hover:bg-slate-50 transition-colors cursor-pointer flex items-center disabled:opacity-40"
+                        className="bg-white/5 border border-white/10 text-frost px-3 py-1.5 rounded-lg font-semibold hover:bg-white/10 transition-all duration-300 ease-out cursor-pointer flex items-center disabled:opacity-40"
                       >
                         <ChevronLeft className="w-4 h-4 mr-0.5" />
                         <span>Previous</span>
                       </button>
 
-                      <span className="font-mono font-semibold text-slate-500">
+                      <span className="font-mono font-semibold text-frost-dim">
                         Page {oppPage} of {totalOppPages}
                       </span>
 
@@ -629,7 +605,7 @@ ${blogsXML}
                         id="next-page-btn"
                         onClick={() => setOppPage(prev => Math.min(totalOppPages, prev + 1))}
                         disabled={oppPage === totalOppPages}
-                        className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg font-semibold hover:bg-slate-50 transition-colors cursor-pointer flex items-center disabled:opacity-40"
+                        className="bg-white/5 border border-white/10 text-frost px-3 py-1.5 rounded-lg font-semibold hover:bg-white/10 transition-all duration-300 ease-out cursor-pointer flex items-center disabled:opacity-40"
                       >
                         <span>Next</span>
                         <ChevronRight className="w-4 h-4 ml-0.5" />
@@ -652,12 +628,12 @@ ${blogsXML}
               className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 animate-fade-in"
             >
               <div className="text-left space-y-1">
-                <h1 className="font-display font-extrabold text-2xl text-brand-navy">Insights & Guides</h1>
-                <p className="text-xs text-slate-400 font-sans">Empowering resources, alumni dialogues, and essay workshops to strengthen your submissions.</p>
+                <h1 className="font-display font-extrabold text-2xl text-frost">Insights & Guides</h1>
+                <p className="text-xs text-frost-dim font-sans">Empowering resources, alumni dialogues, and essay workshops to strengthen your submissions.</p>
               </div>
 
               {/* Horizontal category filtering pills */}
-              <div className="flex overflow-x-auto gap-2 border-b border-slate-100 pb-2">
+              <div className="flex overflow-x-auto gap-2 border-b border-white/10 pb-2">
                 {[
                   { id: 'All', label: 'All Articles' },
                   { id: 'Career Guide', label: 'Career Guides' },
@@ -669,10 +645,10 @@ ${blogsXML}
                     id={`blog-category-btn-${pill.id}`}
                     key={pill.id}
                     onClick={() => setBlogCategoryFilter(pill.id)}
-                    className={`text-xs font-semibold px-4 py-1.5 rounded-full transition-all cursor-pointer ${
+                    className={`text-xs font-semibold px-4 py-1.5 rounded-full transition-all duration-300 ease-out cursor-pointer shrink-0 active:scale-95 ${
                       blogCategoryFilter === pill.id
-                        ? 'bg-brand-navy text-white shadow-xs'
-                        : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                        ? 'bg-pulse/15 border border-pulse/40 text-pulse'
+                        : 'bg-white/5 text-frost-dim border border-white/10 hover:bg-white/10 hover:text-frost'
                     }`}
                   >
                     {pill.label}
@@ -682,7 +658,7 @@ ${blogsXML}
 
               {/* Blog listings display */}
               {filteredBlogs.length === 0 ? (
-                <div className="text-center py-12 text-slate-400 text-xs">No articles available matching the selected category.</div>
+                <div className="text-center py-12 text-frost-dim text-xs">No articles available matching the selected category.</div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredBlogs.map((post) => (
