@@ -55,6 +55,7 @@ function rowToOpportunity(row: any): Opportunity {
     featured: !!row.featured,
     publishedAt: row.published_at,
     viewsCount: row.views_count ?? 0,
+    imageUrl: row.image_url || undefined,
   };
 }
 
@@ -75,6 +76,7 @@ function opportunityToRow(opp: Opportunity) {
     featured: opp.featured,
     published_at: opp.publishedAt,
     views_count: opp.viewsCount,
+    image_url: opp.imageUrl || null,
   };
 }
 
