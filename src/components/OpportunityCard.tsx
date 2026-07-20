@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Calendar, MapPin, Tag, Share2, Bookmark, BookmarkCheck, ExternalLink, GraduationCap, Building2, ClipboardCheck, Gift, Clock, AlertCircle, X } from 'lucide-react';
 import { Opportunity, SavedOpportunity } from '../types';
 import { db } from '../lib/supabase';
+import { trackEvent } from '../lib/analytics';
 import { motion, AnimatePresence } from 'motion/react';
 import SmartImage from './SmartImage';
 
@@ -185,6 +186,7 @@ export default function OpportunityCard({ opportunity, isSaved, onToggleSave, on
               href={opportunity.applyUrl}
               target="_blank"
               rel="noreferrer"
+              onClick={() => trackEvent('opportunity_apply_click', { opportunity_id: opportunity.id, opportunity_title: opportunity.title, source: 'card' })}
               className="px-4 py-2 rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white transition-all cursor-pointer flex items-center justify-center"
               title="Apply directly on organization website"
             >
@@ -332,6 +334,7 @@ export default function OpportunityCard({ opportunity, isSaved, onToggleSave, on
                   href={opportunity.applyUrl}
                   target="_blank"
                   rel="noreferrer"
+                  onClick={() => trackEvent('opportunity_apply_click', { opportunity_id: opportunity.id, opportunity_title: opportunity.title, source: 'modal' })}
                   className="flex items-center space-x-2 bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-xs px-6 py-2.5 rounded-lg shadow-md shadow-brand-orange/15 transition-all cursor-pointer"
                 >
                   <span>Apply Direct on Org Site</span>

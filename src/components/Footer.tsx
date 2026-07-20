@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, CheckCircle2, AlertTriangle, ArrowUpRight } from 'lucide-react';
 import { db } from '../lib/supabase';
+import { trackEvent } from '../lib/analytics';
 import { motion } from 'motion/react';
 
 interface FooterProps {
@@ -27,6 +28,7 @@ export default function Footer({ setCurrentTab }: FooterProps) {
     const response = await db.subscribeEmail(email);
     setSubmitting(false);
     if (response.success) {
+      trackEvent('newsletter_signup');
       setStatus({ type: 'success', message: response.message });
       setEmail('');
     } else {
