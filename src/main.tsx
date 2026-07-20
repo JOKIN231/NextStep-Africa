@@ -11,3 +11,14 @@ createRoot(document.getElementById('root')!).render(
     </ErrorBoundary>
   </StrictMode>,
 );
+
+// Register the service worker after the page has finished loading, so it
+// never competes with or delays the initial render.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {
+      // Installability is a progressive enhancement — a failed registration
+      // (e.g. unsupported browser) should never affect the app itself.
+    });
+  });
+}

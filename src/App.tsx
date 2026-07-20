@@ -4,6 +4,7 @@ import { Opportunity, BlogPost, SavedOpportunity } from './types';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import MetricBanner from './components/MetricBanner';
+import InstallPrompt from './components/InstallPrompt';
 import OpportunityCard from './components/OpportunityCard';
 import BlogCard from './components/BlogCard';
 import Dashboard from './components/Dashboard';
@@ -826,6 +827,9 @@ ${blogsXML}
           </div>
         )}
       </AnimatePresence>
+
+      {/* Smart PWA install trigger — delayed until real engagement */}
+      <InstallPrompt currentTab={currentTab} />
     </div>
   );
 }

@@ -14,6 +14,7 @@ export interface Opportunity {
   featured: boolean;
   publishedAt: string;
   viewsCount: number;
+  imageUrl?: string;
 }
 
 export interface BlogPost {

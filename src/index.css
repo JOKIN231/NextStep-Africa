@@ -36,6 +36,7 @@
   --animate-slide-up: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   --animate-pulse-line: pulse-line 2.8s ease-in-out infinite;
+  --animate-shimmer: shimmer 1.6s ease-in-out infinite;
 }
 
 @keyframes fade-in {
@@ -60,9 +61,14 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-pulse-line, [class*="animate-pulse"] {
+  .animate-pulse-line, .animate-shimmer, [class*="animate-pulse"] {
     animation: none !important;
   }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 body {
