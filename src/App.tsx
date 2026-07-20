@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { db } from './lib/supabase';
+import { trackPageView, trackEvent } from './lib/analytics';
 import { Opportunity, BlogPost, SavedOpportunity } from './types';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -18,6 +19,21 @@ import { motion, AnimatePresence } from 'motion/react';
 export default function App() {
   // Navigation & Core Data State
   const [currentTab, setCurrentTab] = useState<string>('home');
+
+  // Virtual pageview tracking for Analytics. This is a single-page app —
+  // switching tabs never changes the URL or reloads the page — so gtag's
+  // built-in automatic pageview (fired once, on initial script load) would
+  // otherwise be the only pageview Analytics ever sees. This fires one on
+  // every subsequent tab change instead. The first render is skipped on
+  // purpose so the initial load isn't double-counted.
+  const isFirstTabRender = useRef(true);
+  useEffect(() => {
+    if (isFirstTabRender.current) {
+      isFirstTabRender.current = false;
+      return;
+    }
+    trackPageView(`/${currentTab}`, `NextStep Africa - ${currentTab}`);
+  }, [currentTab]);
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [savedOppIds, setSavedOppIds] = useState<string[]>([]);
@@ -468,7 +484,7 @@ ${blogsXML}
                       post={post}
                       onReadPost={(p) => {
                         // View analytics counter simulated
-                        db.incrementBlogViews(p).catch(() => {});
+                        db.incrementBlogViews(p).catch(() => {}); trackEvent('blog_read', { post_id: p.id, post_title: p.title });
                       }}
                     />
                   ))}
@@ -674,7 +690,7 @@ ${blogsXML}
                       key={post.id}
                       post={post}
                       onReadPost={(p) => {
-                        db.incrementBlogViews(p).catch(() => {});
+                        db.incrementBlogViews(p).catch(() => {}); trackEvent('blog_read', { post_id: p.id, post_title: p.title });
                       }}
                     />
                   ))}
