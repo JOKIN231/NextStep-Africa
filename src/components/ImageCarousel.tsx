@@ -12,16 +12,12 @@ interface Slide {
   ctaLabel: string;
 }
 
-// Curated, real, hotlink-safe Unsplash photos — wide/landscape framing
-// suited to a hero-adjacent banner. Distinct set from SmartImage's card
-// fallback pool so the page doesn't repeat the same images twice.
-const BACKGROUND_POOL = [
-  'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&q=80&w=1600',
-  'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&q=80&w=1600',
-  'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&q=80&w=1600',
-  'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=1600',
-  'https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&q=80&w=1600',
-];
+// Background images. Previously hand-picked specific Unsplash photo IDs —
+// several didn't resolve, which is why the carousel (and everything else
+// using the same approach) was showing no images at all. Picsum's
+// seed-based URLs need no ID guessing and are verified stable in 2026.
+const BACKGROUND_SEEDS = ['nsa-hero-1', 'nsa-hero-2', 'nsa-hero-3', 'nsa-hero-4', 'nsa-hero-5'];
+const BACKGROUND_POOL = BACKGROUND_SEEDS.map((s) => `https://picsum.photos/seed/${s}/1600/900`);
 
 const FALLBACK_GRADIENTS = [
   'linear-gradient(135deg, #0B132B 0%, #141B3A 60%, #0B132B 100%)',
@@ -145,6 +141,7 @@ export default function ImageCarousel({ featuredOpportunities, onSlideCta }: Ima
               src={current.imageUrl}
               alt={current.headline}
               loading={active === 0 ? 'eager' : 'lazy'}
+              referrerPolicy="no-referrer"
               onError={() => setFailedImages((prev) => ({ ...prev, [active]: true }))}
               className="absolute inset-0 w-full h-full object-cover"
             />

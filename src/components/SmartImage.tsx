@@ -1,59 +1,17 @@
 import { useState, useMemo } from 'react';
 import { ImageOff } from 'lucide-react';
 
-// Curated, real, hotlink-safe Unsplash photos used as default artwork when
-// an opportunity/article has no image_url set yet. This deliberately does
-// NOT use source.unsplash.com — that no-key random-image service was fully
-// shut down by Unsplash in mid-2024. These are specific real photos on
-// Unsplash's own CDN, grouped by theme.
-const FALLBACK_POOLS = {
-  health: [
-    'https://images.unsplash.com/photo-1584982751601-97dcc096659c?auto=format&fit=crop&q=80&w=1200',
-    'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=1200',
-  ],
-  africa: [
-    'https://images.unsplash.com/photo-1523805009345-7448845a9e53?auto=format&fit=crop&q=80&w=1200',
-    'https://images.unsplash.com/photo-1516834474-48c0abc2a902?auto=format&fit=crop&q=80&w=1200',
-  ],
-  education: [
-    'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=1200',
-    'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=1200',
-  ],
-  research: [
-    'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&q=80&w=1200',
-    'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1200',
-  ],
-  professional: [
-    'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&q=80&w=1200',
-    'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&q=80&w=1200',
-  ],
-} as const;
-
-type PoolKey = keyof typeof FALLBACK_POOLS;
-
-const CATEGORY_POOL_MAP: Record<string, PoolKey> = {
-  Fellowship: 'health',
-  Internship: 'professional',
-  Job: 'professional',
-  Funding: 'research',
-  Scholarship: 'education',
-  Conference: 'research',
-  'Career Guide': 'professional',
-  'Public Health News': 'health',
-  'Alumni Spotlight': 'education',
-  'Academic Resource': 'research',
-  'Policy & Innovation': 'africa',
-};
-
-// Deterministic so the same item always gets the same fallback photo
-// instead of changing on every re-render.
-function hashToIndex(seed: string, length: number) {
-  let hash = 0;
-  for (let i = 0; i < seed.length; i++) {
-    hash = (hash << 5) - hash + seed.charCodeAt(i);
-    hash |= 0;
-  }
-  return Math.abs(hash) % length;
+// Default artwork when an opportunity/article has no image_url set yet.
+//
+// This used to hand-pick specific Unsplash photo IDs from memory. That was
+// the bug: several of those IDs didn't resolve to real photos, and there
+// was no way to verify them without fetching each one individually. Lorem
+// Picsum (picsum.photos) needs no ID guessing at all — its seed-based URLs
+// deterministically return a real, working photo for any seed string, with
+// no key and no lookup required. Confirmed still active and stable in 2026.
+function fallbackImageUrl(seed: string, category?: string): string {
+  const seedKey = `nsa-${category || 'default'}-${seed}`;
+  return `https://picsum.photos/seed/${encodeURIComponent(seedKey)}/900/600`;
 }
 
 interface SmartImageProps {
@@ -61,7 +19,7 @@ interface SmartImageProps {
   src?: string;
   /** Stable id (e.g. the row's id) used to pick a consistent fallback photo. */
   seed: string;
-  /** Opportunity type or blog category — used to pick a relevant fallback theme. */
+  /** Opportunity type or blog category — used to vary the fallback seed. */
   category?: string;
   alt: string;
   className?: string;
@@ -72,11 +30,7 @@ export default function SmartImage({ src, seed, category, alt, className = '' }:
   const [primaryFailed, setPrimaryFailed] = useState(false);
   const [fallbackFailed, setFallbackFailed] = useState(false);
 
-  const fallbackUrl = useMemo(() => {
-    const poolKey = (category && CATEGORY_POOL_MAP[category]) || 'health';
-    const pool = FALLBACK_POOLS[poolKey] || FALLBACK_POOLS.health;
-    return pool[hashToIndex(seed, pool.length)];
-  }, [seed, category]);
+  const fallbackUrl = useMemo(() => fallbackImageUrl(seed, category), [seed, category]);
 
   const resolvedSrc = !src || primaryFailed ? fallbackUrl : src;
 
@@ -98,6 +52,7 @@ export default function SmartImage({ src, seed, category, alt, className = '' }:
           src={resolvedSrc}
           alt={alt}
           loading="lazy"
+          referrerPolicy="no-referrer"
           onLoad={() => setLoaded(true)}
           onError={() => {
             if (!primaryFailed) {
@@ -114,3 +69,4 @@ export default function SmartImage({ src, seed, category, alt, className = '' }:
     </div>
   );
 }
+

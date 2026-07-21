@@ -78,11 +78,11 @@ export default function AdminPortal({
     author: {
       name: '',
       role: '',
-      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
+      avatarUrl: 'https://picsum.photos/seed/nsa-default-author/200/200',
     },
     category: 'Career Guide',
     tags: [],
-    imageUrl: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80&w=1200',
+    imageUrl: 'https://picsum.photos/seed/nsa-default-blog/1200/800',
     featured: false,
     status: 'published',
   });
@@ -227,11 +227,11 @@ export default function AdminPortal({
       author: {
         name: '',
         role: '',
-        avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
+        avatarUrl: 'https://picsum.photos/seed/nsa-default-author/200/200',
       },
       category: 'Career Guide',
       tags: [],
-      imageUrl: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80&w=1200',
+      imageUrl: 'https://picsum.photos/seed/nsa-default-blog/1200/800',
       featured: false,
       status: 'published',
     });
@@ -962,11 +962,11 @@ export default function AdminPortal({
                         author: {
                           name: '',
                           role: '',
-                          avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
+                          avatarUrl: 'https://picsum.photos/seed/nsa-default-author/200/200',
                         },
                         category: 'Career Guide',
                         tags: [],
-                        imageUrl: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80&w=1200',
+                        imageUrl: 'https://picsum.photos/seed/nsa-default-blog/1200/800',
                         featured: false,
                         status: 'published',
                       });
@@ -1140,7 +1140,7 @@ export default function AdminPortal({
                 <div className="bg-white rounded-xl border border-slate-200 overflow-hidden font-sans max-w-sm mx-auto shadow-xs text-left">
                   <div className="h-40 bg-slate-100">
                     <img
-                      src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80&w=1200"
+                      src="https://picsum.photos/seed/nsa-default-blog/1200/800"
                       alt="Twitter featured card"
                       referrerPolicy="no-referrer"
                       className="w-full h-full object-cover"
