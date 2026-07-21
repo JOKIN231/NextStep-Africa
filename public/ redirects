@@ -1,0 +1,5 @@
+# Pages Functions (sitemap.xml, rss.xml) always take priority over this file
+# and never pass through it — so this only needs the SPA fallback for
+# everything else, including the four static pages (about/contact/privacy/
+# terms), which are rendered client-side based on the URL path.
+/*   /index.html   200
