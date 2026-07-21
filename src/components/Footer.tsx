@@ -170,22 +170,31 @@ export default function Footer({ setCurrentTab }: FooterProps) {
         </div>
 
         {/* copyright */}
-        <div className="flex flex-col md:flex-row justify-between items-center pt-8 text-xs text-frost-dim/70 font-mono gap-4">
-          <div>
-            &copy; {new Date().getFullYear()} NextStep Africa. All rights reserved.
+        <div className="flex flex-col gap-4 pt-8">
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-5 gap-y-2 text-xs font-semibold">
+            <button id="footer-link-about" onClick={() => setCurrentTab('about')} className="text-frost-dim hover:text-frost transition-colors duration-300 cursor-pointer">About Us</button>
+            <button id="footer-link-contact" onClick={() => setCurrentTab('contact')} className="text-frost-dim hover:text-frost transition-colors duration-300 cursor-pointer">Contact Us</button>
+            <button id="footer-link-privacy" onClick={() => setCurrentTab('privacy')} className="text-frost-dim hover:text-frost transition-colors duration-300 cursor-pointer">Privacy Policy</button>
+            <button id="footer-link-terms" onClick={() => setCurrentTab('terms')} className="text-frost-dim hover:text-frost transition-colors duration-300 cursor-pointer">Terms of Service</button>
           </div>
-          <div className="flex space-x-6 items-center">
-            <span>Optimized for SEO & Accessibility</span>
-            <span className="text-amber-signal">•</span>
-            <span>Made with Care for Africa</span>
-            <span className="text-white/10">•</span>
-            <button
-              id="footer-admin-link"
-              onClick={() => setCurrentTab('admin')}
-              className="text-frost-dim/40 hover:text-frost-dim transition-colors duration-300 cursor-pointer"
-            >
-              Team
-            </button>
+
+          <div className="flex flex-col md:flex-row justify-between items-center text-xs text-frost-dim/70 font-mono gap-4">
+            <div>
+              &copy; {new Date().getFullYear()} NextStep Africa. All rights reserved.
+            </div>
+            <div className="flex space-x-6 items-center">
+              <span>Optimized for SEO & Accessibility</span>
+              <span className="text-amber-signal">•</span>
+              <span>Made with Care for Africa</span>
+              <span className="text-white/10">•</span>
+              <button
+                id="footer-admin-link"
+                onClick={() => setCurrentTab('admin')}
+                className="text-frost-dim/40 hover:text-frost-dim transition-colors duration-300 cursor-pointer"
+              >
+                Team
+              </button>
+            </div>
           </div>
         </div>
       </div>
