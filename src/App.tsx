@@ -7,6 +7,7 @@ import Footer from './components/Footer';
 import MetricBanner from './components/MetricBanner';
 import InstallPrompt from './components/InstallPrompt';
 import FilterPanel from './components/FilterPanel';
+import ImageCarousel from './components/ImageCarousel';
 import OpportunityCard from './components/OpportunityCard';
 import BlogCard from './components/BlogCard';
 import Dashboard from './components/Dashboard';
@@ -392,6 +393,14 @@ ${blogsXML}
                     </div>
                   </div>
                 </section>
+              </div>
+
+              {/* Premium rotating image showcase */}
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <ImageCarousel
+                  featuredOpportunities={opportunities.filter(o => o.featured)}
+                  onSlideCta={() => setCurrentTab('opportunities')}
+                />
               </div>
 
               {/* Six Visual Hub Category Pills */}
