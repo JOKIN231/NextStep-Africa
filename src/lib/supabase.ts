@@ -258,6 +258,18 @@ export const db = {
     }));
   },
 
+  // ---------------- Contact form ----------------
+  submitContactMessage: async (payload: { name: string; email: string; subject: string; message: string }): Promise<{ success: boolean; message: string }> => {
+    if (!supabase) {
+      return { success: false, message: 'The contact form is temporarily unavailable.' };
+    }
+    const { error } = await supabase.from('contact_messages').insert(payload);
+    if (error) {
+      return { success: false, message: 'Something went wrong sending your message. Please try again or reach us on WhatsApp.' };
+    }
+    return { success: true, message: "Thanks — we've received your message and will get back to you soon." };
+  },
+
   // ---------------- Personal application tracker ----------------
   // Deliberately local-only: there is no visitor account system, so a
   // per-browser bookmark list is the correct behavior here, not a bug.
