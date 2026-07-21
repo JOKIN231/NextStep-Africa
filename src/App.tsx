@@ -8,6 +8,8 @@ import MetricBanner from './components/MetricBanner';
 import InstallPrompt from './components/InstallPrompt';
 import FilterPanel from './components/FilterPanel';
 import ImageCarousel from './components/ImageCarousel';
+import NewsletterModal from './components/NewsletterModal';
+import { AboutPage, ContactPage, PrivacyPage, TermsPage } from './pages/StaticPages';
 import OpportunityCard from './components/OpportunityCard';
 import BlogCard from './components/BlogCard';
 import Dashboard from './components/Dashboard';
@@ -20,7 +22,37 @@ import { motion, AnimatePresence } from 'motion/react';
 
 export default function App() {
   // Navigation & Core Data State
-  const [currentTab, setCurrentTab] = useState<string>('home');
+  // About/Contact/Privacy/Terms get real, crawlable URLs (needed for search
+  // engine and AdSense indexing) layered on top of the existing tab-state
+  // system — every other section stays exactly as it was, tab-state only.
+  const LEGAL_PATHS: Record<string, string> = { '/about': 'about', '/contact': 'contact', '/privacy': 'privacy', '/terms': 'terms' };
+
+  const [currentTab, setCurrentTab] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return LEGAL_PATHS[window.location.pathname] || 'home';
+    }
+    return 'home';
+  });
+
+  // Push/pop the real URL only for the legal pages; everything else keeps
+  // the app at "/" like it always has.
+  useEffect(() => {
+    const legalEntry = Object.entries(LEGAL_PATHS).find(([, tab]) => tab === currentTab);
+    const desiredPath = legalEntry ? legalEntry[0] : '/';
+    if (window.location.pathname !== desiredPath) {
+      window.history.pushState({}, '', desiredPath);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTab]);
+
+  useEffect(() => {
+    const onPopState = () => {
+      setCurrentTab(LEGAL_PATHS[window.location.pathname] || 'home');
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Virtual pageview tracking for Analytics. This is a single-page app —
   // switching tabs never changes the URL or reloads the page — so gtag's
@@ -39,6 +71,7 @@ export default function App() {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [savedOppIds, setSavedOppIds] = useState<string[]>([]);
+
 
   // Search & Filter States
   const [searchQuery, setSearchQuery] = useState('');
@@ -724,6 +757,28 @@ ${blogsXML}
               />
             </motion.div>
           )}
+
+          {/* Static trust/compliance pages — real URLs, see the routing effects above */}
+          {currentTab === 'about' && (
+            <motion.div id="about-tab-content" key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <AboutPage setCurrentTab={setCurrentTab} />
+            </motion.div>
+          )}
+          {currentTab === 'contact' && (
+            <motion.div id="contact-tab-content" key="contact" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <ContactPage setCurrentTab={setCurrentTab} />
+            </motion.div>
+          )}
+          {currentTab === 'privacy' && (
+            <motion.div id="privacy-tab-content" key="privacy" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <PrivacyPage setCurrentTab={setCurrentTab} />
+            </motion.div>
+          )}
+          {currentTab === 'terms' && (
+            <motion.div id="terms-tab-content" key="terms" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <TermsPage setCurrentTab={setCurrentTab} />
+            </motion.div>
+          )}
         </AnimatePresence>
       </main>
 
@@ -831,6 +886,9 @@ ${blogsXML}
 
       {/* Smart PWA install trigger — delayed until real engagement */}
       <InstallPrompt currentTab={currentTab} />
+
+      {/* Behavior-triggered newsletter popup */}
+      <NewsletterModal currentTab={currentTab} />
     </div>
   );
 }
