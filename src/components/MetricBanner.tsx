@@ -39,8 +39,8 @@ export default function MetricBanner({ opportunities, loading }: MetricBannerPro
     {
       value: loading ? '—' : String(totalGrants),
       label: 'Grants Available',
-      tone: 'text-glow-indigo',
-      dot: 'bg-glow-indigo',
+      tone: 'text-frost',
+      dot: 'bg-frost-dim',
     },
     {
       value: loading ? '—' : daysUntilNext === null ? 'None open' : `${daysUntilNext}d`,
@@ -62,9 +62,9 @@ export default function MetricBanner({ opportunities, loading }: MetricBannerPro
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-3 divide-x divide-white/10">
           {stats.map((s, i) => (
-            <div key={i} className="flex items-center justify-center gap-2.5 py-3 sm:py-3.5">
+            <div key={i} className="flex items-center justify-center gap-3 py-4 sm:py-5">
               <span
-                className={`relative w-1.5 h-1.5 rounded-full ${s.dot} shrink-0 ${
+                className={`relative w-2 h-2 rounded-full ${s.dot} shrink-0 ${
                   s.urgent ? 'animate-pulse-slow' : ''
                 }`}
               >
@@ -73,7 +73,7 @@ export default function MetricBanner({ opportunities, loading }: MetricBannerPro
                 )}
               </span>
               <div className="leading-tight text-center sm:text-left">
-                <p className={`font-mono font-bold text-sm sm:text-base ${s.tone}`}>{s.value}</p>
+                <p className={`font-display font-extrabold text-xl sm:text-2xl tracking-tight ${s.tone}`}>{s.value}</p>
                 <p className="text-[8px] sm:text-[9px] font-bold text-frost-dim uppercase tracking-widest">
                   {s.label}
                 </p>
