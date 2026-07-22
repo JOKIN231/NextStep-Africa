@@ -1,17 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
 @theme {
-  /* Typography — an editorial serif for authority (public-health journal
-     register), a body face literally named for this subject, and a mono
-     face for anything that reads like a live instrument readout. */
-  --font-sans: "Public Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Fraunces", "Public Sans", serif;
+  /* Typography — one bold geometric sans carries both headlines and body,
+     which is what the reference actually shows (not a serif+sans pairing).
+     Mono stays for anything that reads like a live data readout. */
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Manrope", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", monospace;
 
   /* Legacy light-theme brand colors — still used by components not yet
-     migrated to the new dark system (Phase 2/3). Do not remove until
-     every usage is gone. */
+     migrated to the new dark system. Do not remove until every usage is gone. */
   --color-brand-orange: #F57C00;
   --color-brand-navy: #0D47A1;
   --color-brand-green: #2E7D32;
@@ -19,24 +18,25 @@
   --color-brand-navy-hover: #1A237E;
   --color-brand-green-hover: #1B5E20;
 
-  /* New dark / glassmorphism system. Named for what each color does in
-     this specific dashboard, not for the hex itself. */
-  --color-void: #0B132B;         /* primary dark background */
-  --color-void-deep: #070C1C;    /* recessed/base layer beneath cards */
-  --color-glass: #141B3A;        /* card surface tone before blur+opacity */
-  --color-amber-signal: #F0A94E; /* deadlines, urgency, metrics */
-  --color-amber-signal-hover: #E0964A;
-  --color-pulse: #34D399;        /* live/active/growth state */
-  --color-pulse-hover: #22B889;
-  --color-glow-indigo: #818CF8;  /* featured/premium accents & glows */
-  --color-frost: #F1F5F9;        /* primary text on dark surfaces */
-  --color-frost-dim: #94A3B8;    /* secondary text on dark surfaces */
+  /* Dark system v2 — true obsidian (not navy-tinted), one disciplined
+     accent doing most of the work instead of four competing ones. */
+  --color-void: #080C14;          /* primary background — true near-black */
+  --color-void-deep: #050810;     /* recessed/base layer beneath cards */
+  --color-glass: #171B21;         /* neutral charcoal card surface, not blue */
+  --color-amber-signal: #EAE64A;  /* THE primary accent — CTAs, badges, links */
+  --color-amber-signal-hover: #D9D53E;
+  --color-pulse: #059669;         /* secondary accent — live/verified state, ambient glow */
+  --color-pulse-hover: #047857;
+  --color-glow-indigo: #818CF8;   /* rare — reserve for one-off premium accents only */
+  --color-frost: #F5F5F4;         /* primary text on dark surfaces */
+  --color-frost-dim: #9CA3AF;     /* secondary text — neutral gray, not blue-tinted */
 
   --animate-fade-in: fade-in 0.3s ease-out;
   --animate-slide-up: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   --animate-pulse-line: pulse-line 2.8s ease-in-out infinite;
   --animate-shimmer: shimmer 1.6s ease-in-out infinite;
+  --animate-glow-drift: glow-drift 12s ease-in-out infinite;
 }
 
 @keyframes fade-in {
@@ -60,8 +60,14 @@
   100% { transform: translateX(100%); opacity: 0; }
 }
 
+/* Slow ambient drift for the emerald glow orbs behind hero-style sections. */
+@keyframes glow-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(3%, -4%) scale(1.08); }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .animate-pulse-line, .animate-shimmer, [class*="animate-pulse"] {
+  .animate-pulse-line, .animate-shimmer, .animate-glow-drift, [class*="animate-pulse"] {
     animation: none !important;
   }
 }

@@ -380,26 +380,30 @@ ${blogsXML}
               className="space-y-16"
             >
               {/* Premium Hero Section */}
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-                <section className="relative overflow-hidden bg-glass/60 backdrop-blur-md rounded-3xl py-12 px-6 sm:px-12 text-left shadow-2xl shadow-indigo-500/10 border border-white/10">
-                  <div className="absolute right-0 bottom-0 top-0 w-1/3 opacity-20 bg-radial-[circle_600px_at_100%_50%] from-glow-indigo/30 via-transparent to-transparent pointer-events-none hidden md:block"></div>
-                  
-                  <div className="max-w-3xl space-y-6 relative z-10">
-                    <div className="inline-flex items-center space-x-1.5 bg-pulse/15 border border-pulse/25 px-3 py-1 rounded-full text-[10px] font-mono font-extrabold tracking-widest text-pulse uppercase">
-                      <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-                      <span>Featured Gateway</span>
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12">
+                <section className="relative overflow-hidden rounded-3xl py-16 sm:py-24 px-6 sm:px-14 text-left">
+                  {/* Ambient emerald glow orbs — the reference's signature atmosphere */}
+                  <div className="absolute -top-24 -left-24 w-96 h-96 bg-pulse/20 rounded-full blur-[100px] pointer-events-none animate-glow-drift" />
+                  <div className="absolute -bottom-32 -right-16 w-[28rem] h-[28rem] bg-pulse/10 rounded-full blur-[120px] pointer-events-none animate-glow-drift" style={{ animationDelay: '-6s' }} />
+
+                  <div className="max-w-3xl space-y-7 relative z-10">
+                    <div className="inline-flex items-center space-x-1.5 bg-amber-signal/10 border border-amber-signal/30 px-3 py-1 rounded-full text-[10px] font-mono font-extrabold tracking-widest text-amber-signal uppercase">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Premier Publication & Career Directory</span>
                     </div>
 
-                    <h1 className="font-display font-extrabold text-3xl sm:text-5xl text-frost tracking-tight leading-tight max-w-2xl">
-                      Opportunities for the Next Generation of <span className="text-amber-signal">African Health Leaders</span>
+                    <h1 className="font-display font-extrabold text-4xl sm:text-6xl text-frost tracking-tight leading-[1.05] max-w-2xl">
+                      Elevating African <span className="text-pulse">Public Health</span> Careers
                     </h1>
 
-                    <p className="text-xs sm:text-sm text-frost-dim max-w-xl leading-relaxed font-medium">
-                      Access fully funded fellowships, scholarships, internships, and research grants at Africa CDC, WHO, and global health organizations. Built specifically for African students and professionals.
+                    <p className="text-sm sm:text-base text-frost-dim max-w-xl leading-relaxed">
+                      NextStep Africa connects the continent's brightest public health minds
+                      with world-class fellowships, grants, and career-defining opportunities.
+                      Your next breakthrough starts here.
                     </p>
 
                     {/* Main Hero Directory search box */}
-                    <div className="max-w-xl bg-white/5 backdrop-blur-xs border border-white/10 p-1.5 rounded-2xl shadow-lg flex flex-col sm:flex-row gap-2">
+                    <div className="max-w-xl bg-glass/70 backdrop-blur-md border border-white/10 p-1.5 rounded-2xl shadow-lg flex flex-col sm:flex-row gap-2">
                       <div className="flex-1 flex items-center space-x-2 px-3 py-1.5">
                         <Search className="w-5 h-5 text-frost-dim shrink-0" />
                         <input
@@ -421,7 +425,7 @@ ${blogsXML}
                         onClick={() => setCurrentTab('opportunities')}
                         className="bg-amber-signal hover:bg-amber-signal-hover text-void font-extrabold text-xs px-6 py-3 rounded-xl cursor-pointer transition-all duration-300 ease-out shadow-xs shrink-0 active:scale-95"
                       >
-                        Browse Gateway
+                        Explore Fellowships
                       </button>
                     </div>
                   </div>
