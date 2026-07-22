@@ -92,18 +92,18 @@ export default function Footer({ setCurrentTab }: FooterProps) {
               </ul>
             </div>
             <div>
-              <h3 className="text-xs font-bold text-frost uppercase tracking-widest font-mono mb-4 border-l-2 border-glow-indigo pl-2">
+              <h3 className="text-xs font-bold text-frost uppercase tracking-widest font-mono mb-4 border-l-2 border-amber-signal pl-2">
                 Resources
               </h3>
               <ul className="space-y-2.5 text-sm">
                 <li>
-                  <a href="https://africacdc.org" target="_blank" rel="noreferrer" className="text-frost-dim hover:text-glow-indigo transition-colors duration-300 flex items-center space-x-1 text-sm font-semibold">
+                  <a href="https://africacdc.org" target="_blank" rel="noreferrer" className="text-frost-dim hover:text-amber-signal transition-colors duration-300 flex items-center space-x-1 text-sm font-semibold">
                     <span>Africa CDC</span>
                     <ArrowUpRight className="w-3 h-3 opacity-60" />
                   </a>
                 </li>
                 <li>
-                  <a href="https://who.int" target="_blank" rel="noreferrer" className="text-frost-dim hover:text-glow-indigo transition-colors duration-300 flex items-center space-x-1 text-sm font-semibold">
+                  <a href="https://who.int" target="_blank" rel="noreferrer" className="text-frost-dim hover:text-amber-signal transition-colors duration-300 flex items-center space-x-1 text-sm font-semibold">
                     <span>WHO Africa</span>
                     <ArrowUpRight className="w-3 h-3 opacity-60" />
                   </a>

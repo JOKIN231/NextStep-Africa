@@ -20,7 +20,7 @@ const DEADLINE_CHIP_STYLES: Record<DeadlineTone, string> = {
   urgent: 'bg-rose-500/15 text-rose-300 border-rose-500/30',
   warning: 'bg-amber-signal/15 text-amber-signal border-amber-signal/30',
   safe: 'bg-pulse/15 text-pulse border-pulse/30',
-  neutral: 'bg-glow-indigo/15 text-glow-indigo border-glow-indigo/30',
+  neutral: 'bg-white/8 text-frost-dim border-white/15',
 };
 
 export default function OpportunityCard({ opportunity, isSaved, onToggleSave, onShare }: OpportunityCardProps) {
@@ -93,7 +93,7 @@ export default function OpportunityCard({ opportunity, isSaved, onToggleSave, on
         id={`opp-card-${opportunity.id}`}
         layout
         whileHover={{ y: -6 }}
-        className="group bg-glass/50 backdrop-blur-md rounded-2xl border border-white/10 p-6 flex flex-col justify-between relative transition-all duration-300 ease-out overflow-hidden hover:border-white/25 hover:shadow-2xl hover:shadow-indigo-500/10"
+        className="group bg-glass/50 backdrop-blur-md rounded-2xl border border-white/10 p-6 flex flex-col justify-between relative transition-all duration-300 ease-out overflow-hidden hover:border-white/25 hover:shadow-2xl hover:shadow-emerald-500/10"
       >
         {/* Image Banner */}
         <SmartImage
@@ -229,7 +229,7 @@ export default function OpportunityCard({ opportunity, isSaved, onToggleSave, on
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 40 }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-glass/95 backdrop-blur-md rounded-t-3xl sm:rounded-2xl max-w-2xl w-full max-h-[90vh] sm:max-h-[85vh] overflow-y-auto shadow-2xl shadow-indigo-500/10 border border-white/15 flex flex-col"
+              className="bg-glass/95 backdrop-blur-md rounded-t-3xl sm:rounded-2xl max-w-2xl w-full max-h-[90vh] sm:max-h-[85vh] overflow-y-auto shadow-2xl shadow-emerald-500/10 border border-white/15 flex flex-col"
             >
               {/* Hero Image */}
               <SmartImage

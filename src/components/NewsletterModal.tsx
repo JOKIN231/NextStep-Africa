@@ -103,7 +103,7 @@ export default function NewsletterModal({ currentTab }: NewsletterModalProps) {
             exit={{ opacity: 0, y: 60, scale: 0.98 }}
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full sm:w-[26rem] bg-glass/95 backdrop-blur-md border border-white/15 rounded-3xl shadow-2xl shadow-indigo-500/10 p-7 text-center"
+            className="relative w-full sm:w-[26rem] bg-glass/95 backdrop-blur-md border border-white/15 rounded-3xl shadow-2xl shadow-emerald-500/10 p-7 text-center"
           >
             <button
               id="newsletter-modal-dismiss"

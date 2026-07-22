@@ -93,7 +93,7 @@ export default function BlogCard({ post, onReadPost }: BlogCardProps) {
         id={`blog-card-${post.id}`}
         layout
         whileHover={{ y: -6 }}
-        className="group bg-glass/50 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden flex flex-col justify-between transition-all duration-300 ease-out hover:border-white/25 hover:shadow-2xl hover:shadow-indigo-500/10"
+        className="group bg-glass/50 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden flex flex-col justify-between transition-all duration-300 ease-out hover:border-white/25 hover:shadow-2xl hover:shadow-emerald-500/10"
       >
         <div>
           {/* Cover Image */}

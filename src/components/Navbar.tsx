@@ -38,7 +38,7 @@ export default function Navbar({ currentTab, setCurrentTab, onSearch }: NavbarPr
               className="flex items-center space-x-3 cursor-pointer group"
             >
               <div className="relative w-10 h-10 shrink-0">
-                <div className="absolute inset-0 rounded-lg bg-glow-indigo/30 blur-md group-hover:bg-glow-indigo/50 transition-all duration-300" />
+                <div className="absolute inset-0 rounded-lg bg-pulse/30 blur-md group-hover:bg-pulse/50 transition-all duration-300" />
                 <div className="relative w-10 h-10 bg-glass border border-white/15 rounded-lg flex items-center justify-center text-frost transform group-hover:scale-105 transition-transform duration-300 ease-out">
                   <div className="w-5 h-5 border-2 border-pulse rounded-xs rotate-45 flex items-center justify-center">
                     <span className="-rotate-45 text-[10px] font-extrabold font-mono select-none">NS</span>
@@ -68,9 +68,9 @@ export default function Navbar({ currentTab, setCurrentTab, onSearch }: NavbarPr
                   setSearchVal(e.target.value);
                   if (onSearch) onSearch(e.target.value);
                 }}
-                className="w-full bg-white/5 hover:bg-white/[0.07] border border-white/10 rounded-full py-1.5 pl-4 pr-10 text-xs font-mono focus:outline-hidden focus:ring-2 focus:ring-glow-indigo/40 focus:border-glow-indigo/40 focus:bg-white/[0.08] transition-all duration-300 ease-out text-frost placeholder-frost-dim/70"
+                className="w-full bg-white/5 hover:bg-white/[0.07] border border-white/10 rounded-full py-1.5 pl-4 pr-10 text-xs font-mono focus:outline-hidden focus:ring-2 focus:ring-amber-signal/40 focus:border-amber-signal/40 focus:bg-white/[0.08] transition-all duration-300 ease-out text-frost placeholder-frost-dim/70"
               />
-              <button id="navbar-search-submit" type="submit" className="absolute right-3.5 top-2 text-frost-dim group-focus-within:text-glow-indigo transition-colors">
+              <button id="navbar-search-submit" type="submit" className="absolute right-3.5 top-2 text-frost-dim group-focus-within:text-amber-signal transition-colors">
                 <Search className="w-4 h-4" />
               </button>
             </form>
@@ -131,7 +131,7 @@ export default function Navbar({ currentTab, setCurrentTab, onSearch }: NavbarPr
                     setSearchVal(e.target.value);
                     if (onSearch) onSearch(e.target.value);
                   }}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg py-2.5 pl-3 pr-10 text-sm font-mono text-frost placeholder-frost-dim/70 focus:outline-hidden focus:ring-2 focus:ring-glow-indigo/40"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg py-2.5 pl-3 pr-10 text-sm font-mono text-frost placeholder-frost-dim/70 focus:outline-hidden focus:ring-2 focus:ring-amber-signal/40"
                 />
                 <button id="mobile-search-submit" type="submit" className="absolute right-3 top-3 text-frost-dim">
                   <Search className="w-4 h-4" />

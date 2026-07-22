@@ -128,7 +128,7 @@ export default function InstallPrompt({ currentTab }: InstallPromptProps) {
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:w-96 z-[70]"
           >
-            <div className="relative bg-glass/95 backdrop-blur-md border border-white/15 rounded-2xl shadow-2xl shadow-indigo-500/10 p-4 flex items-start gap-3">
+            <div className="relative bg-glass/95 backdrop-blur-md border border-white/15 rounded-2xl shadow-2xl shadow-emerald-500/10 p-4 flex items-start gap-3">
               <button
                 id="install-prompt-dismiss"
                 onClick={dismiss}
@@ -179,7 +179,7 @@ export default function InstallPrompt({ currentTab }: InstallPromptProps) {
               exit={{ opacity: 0, y: 60 }}
               transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full sm:w-96 bg-glass/95 backdrop-blur-md border border-white/15 rounded-2xl shadow-2xl shadow-indigo-500/10 p-6"
+              className="relative w-full sm:w-96 bg-glass/95 backdrop-blur-md border border-white/15 rounded-2xl shadow-2xl shadow-emerald-500/10 p-6"
             >
               <button
                 id="ios-install-modal-dismiss"
@@ -203,7 +203,7 @@ export default function InstallPrompt({ currentTab }: InstallPromptProps) {
 
               <div className="space-y-3">
                 <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl p-3">
-                  <span className="w-6 h-6 rounded-full bg-glow-indigo/20 text-glow-indigo text-xs font-bold font-mono flex items-center justify-center shrink-0">
+                  <span className="w-6 h-6 rounded-full bg-pulse/20 text-pulse text-xs font-bold font-mono flex items-center justify-center shrink-0">
                     1
                   </span>
                   <span className="text-xs text-frost flex items-center gap-1.5">
@@ -220,7 +220,7 @@ export default function InstallPrompt({ currentTab }: InstallPromptProps) {
                 </div>
 
                 <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl p-3">
-                  <span className="w-6 h-6 rounded-full bg-glow-indigo/20 text-glow-indigo text-xs font-bold font-mono flex items-center justify-center shrink-0">
+                  <span className="w-6 h-6 rounded-full bg-pulse/20 text-pulse text-xs font-bold font-mono flex items-center justify-center shrink-0">
                     2
                   </span>
                   <span className="text-xs text-frost flex items-center gap-1.5">

@@ -303,7 +303,7 @@ export default function AdminPortal({
     return (
       <div id="admin-login-screen" className="bg-void-deep -mt-px py-16">
       <div className="max-w-md mx-auto px-4 animate-fade-in">
-        <div className="bg-glass/70 backdrop-blur-md border border-white/15 rounded-3xl shadow-2xl shadow-indigo-500/10 overflow-hidden">
+        <div className="bg-glass/70 backdrop-blur-md border border-white/15 rounded-3xl shadow-2xl shadow-emerald-500/10 overflow-hidden">
           <div className="bg-void p-6 text-center border-b border-white/10">
             <div className="w-12 h-12 rounded-xl bg-glass border border-white/15 flex items-center justify-center mx-auto mb-3">
               <div className="w-6 h-6 border-2 border-pulse rounded-xs rotate-45" />
@@ -410,7 +410,7 @@ export default function AdminPortal({
               <m.icon className={`w-4 h-4 ${m.tone}`} />
               <span className={`w-1.5 h-1.5 rounded-full ${m.dot}`} />
             </div>
-            <p className={`font-mono font-extrabold text-2xl ${m.tone}`}>{m.value}</p>
+            <p className={`font-display font-extrabold text-2xl tracking-tight ${m.tone}`}>{m.value}</p>
             <p className="text-[9px] font-bold text-frost-dim uppercase tracking-widest">{m.label}</p>
           </div>
         ))}
@@ -981,7 +981,7 @@ export default function AdminPortal({
                 <button
                   id="blog-save-submit"
                   type="submit"
-                  className="flex-1 bg-glow-indigo hover:opacity-90 text-void font-bold text-xs py-2.5 rounded-lg transition-all duration-300 ease-out cursor-pointer active:scale-95"
+                  className="flex-1 bg-amber-signal hover:bg-amber-signal-hover text-void font-bold text-xs py-2.5 rounded-lg transition-all duration-300 ease-out cursor-pointer active:scale-95"
                 >
                   {editingBlogId ? 'Save Article' : 'Publish Article'}
                 </button>

@@ -121,7 +121,7 @@ export default function ImageCarousel({ featuredOpportunities, onSlideCta }: Ima
   return (
     <div
       id="home-image-carousel"
-      className="relative w-full h-56 sm:h-72 md:h-80 rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-indigo-500/10 group"
+      className="relative w-full h-56 sm:h-72 md:h-80 rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-emerald-500/10 group"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >

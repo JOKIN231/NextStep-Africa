@@ -55,7 +55,7 @@ export default function FilterPanel({
             exit={{ y: '100%', opacity: 0 }}
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full sm:h-full sm:w-96 bg-glass/95 backdrop-blur-md border-t sm:border-t-0 sm:border-l border-white/15 rounded-t-3xl sm:rounded-none shadow-2xl shadow-indigo-500/10 max-h-[85vh] sm:max-h-none flex flex-col"
+            className="relative w-full sm:h-full sm:w-96 bg-glass/95 backdrop-blur-md border-t sm:border-t-0 sm:border-l border-white/15 rounded-t-3xl sm:rounded-none shadow-2xl shadow-emerald-500/10 max-h-[85vh] sm:max-h-none flex flex-col"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-5 border-b border-white/10 shrink-0">
@@ -104,7 +104,7 @@ export default function FilterPanel({
                       onClick={() => setLocationTypeFilter(loc)}
                       className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-300 ease-out cursor-pointer active:scale-95 ${
                         locationTypeFilter === loc
-                          ? 'bg-glow-indigo/15 border border-glow-indigo/40 text-glow-indigo'
+                          ? 'bg-amber-signal/15 border border-amber-signal/40 text-amber-signal'
                           : 'bg-white/5 border border-white/10 text-frost-dim hover:text-frost hover:bg-white/10'
                       }`}
                     >
