@@ -5,6 +5,23 @@ import { db } from '../lib/supabase';
 import { motion, AnimatePresence } from 'motion/react';
 import SmartImage from './SmartImage';
 
+// Posts written with the rich text editor are stored as real HTML. Posts
+// published before that editor existed still use the old ##/* shortcut
+// format — this tells the two apart so both keep rendering correctly.
+function isHtmlContent(content: string): boolean {
+  return /^\s*<[a-z][\s\S]*>/i.test(content.trim());
+}
+
+// Content only ever comes from the single authenticated admin account, so
+// this is a light safety net rather than a full sanitizer — just strips
+// anything that could execute script, nothing else.
+function sanitizeForDisplay(html: string): string {
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/ on\w+="[^"]*"/gi, '')
+    .replace(/ on\w+='[^']*'/gi, '');
+}
+
 interface BlogCardProps {
   key?: string;
   post: BlogPost;
@@ -300,32 +317,43 @@ export default function BlogCard({ post, onReadPost }: BlogCardProps) {
 
                   {/* Real Content Body */}
                   <div className="lg:col-span-11 max-w-none text-frost-dim">
-                    <div className="markdown-body">
-                      {activePost.content.split('\n\n').map((para, i) => {
-                        if (para.startsWith('### ')) {
-                          return <h3 key={i} className="text-lg font-bold text-frost mt-6 mb-3">{para.replace('### ', '')}</h3>;
-                        } else if (para.startsWith('## ')) {
-                          return <h2 key={i} className="text-xl font-bold text-frost mt-8 mb-4 border-b border-white/10 pb-2">{para.replace('## ', '')}</h2>;
-                        } else if (para.startsWith('* ')) {
-                          return (
-                            <ul key={i} className="list-disc pl-5 my-3 text-sm space-y-1 marker:text-amber-signal">
-                              {para.split('\n').map((li, idx) => (
-                                <li key={idx}>{li.replace('* ', '')}</li>
-                              ))}
-                            </ul>
-                          );
-                        } else if (para.match(/^\d+\./)) {
-                          return (
-                            <ol key={i} className="list-decimal pl-5 my-3 text-sm space-y-1 marker:text-amber-signal marker:font-bold">
-                              {para.split('\n').map((li, idx) => (
-                                <li key={idx}>{li.replace(/^\d+\.\s*/, '')}</li>
-                              ))}
-                            </ol>
-                          );
-                        }
-                        return <p key={i} className="text-sm leading-relaxed mb-4">{para}</p>;
-                      })}
-                    </div>
+                    {isHtmlContent(activePost.content) ? (
+                      // New editor output — real HTML, safe here because only the
+                      // single authenticated admin can ever write this content.
+                      <div
+                        className="rendered-article-content text-sm"
+                        dangerouslySetInnerHTML={{ __html: sanitizeForDisplay(activePost.content) }}
+                      />
+                    ) : (
+                      // Older posts published before the rich text editor existed,
+                      // still using the old ## / * shortcut format.
+                      <div className="markdown-body">
+                        {activePost.content.split('\n\n').map((para, i) => {
+                          if (para.startsWith('### ')) {
+                            return <h3 key={i} className="text-lg font-bold text-frost mt-6 mb-3">{para.replace('### ', '')}</h3>;
+                          } else if (para.startsWith('## ')) {
+                            return <h2 key={i} className="text-xl font-bold text-frost mt-8 mb-4 border-b border-white/10 pb-2">{para.replace('## ', '')}</h2>;
+                          } else if (para.startsWith('* ')) {
+                            return (
+                              <ul key={i} className="list-disc pl-5 my-3 text-sm space-y-1 marker:text-amber-signal">
+                                {para.split('\n').map((li, idx) => (
+                                  <li key={idx}>{li.replace('* ', '')}</li>
+                                ))}
+                              </ul>
+                            );
+                          } else if (para.match(/^\d+\./)) {
+                            return (
+                              <ol key={i} className="list-decimal pl-5 my-3 text-sm space-y-1 marker:text-amber-signal marker:font-bold">
+                                {para.split('\n').map((li, idx) => (
+                                  <li key={idx}>{li.replace(/^\d+\.\s*/, '')}</li>
+                                ))}
+                              </ol>
+                            );
+                          }
+                          return <p key={i} className="text-sm leading-relaxed mb-4">{para}</p>;
+                        })}
+                      </div>
+                    )}
 
                     {/* Author Box */}
                     <div className="mt-12 bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col md:flex-row items-start md:items-center gap-4">

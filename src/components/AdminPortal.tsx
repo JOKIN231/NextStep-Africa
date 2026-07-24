@@ -7,6 +7,8 @@ import {
   LayoutGrid, Users, BarChart3, Info, AlignLeft, Search as SearchIcon
 } from 'lucide-react';
 import { motion } from 'motion/react';
+import ImageUploader from './ImageUploader';
+import RichTextEditor from './RichTextEditor';
 
 interface AdminPortalProps {
   opportunities: Opportunity[];
@@ -208,7 +210,7 @@ export default function AdminPortal({
       slug: blogForm.slug || generatedSlug,
       tags: tagsArray.length > 0 ? tagsArray : blogForm.tags,
       publishedAt: new Date().toISOString(),
-      readTimeMin: Math.max(1, Math.ceil(blogForm.content.split(' ').length / 200)),
+      readTimeMin: Math.max(1, Math.ceil(blogForm.content.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length / 200)),
       viewsCount: editingBlogId ? (blogs.find(b => b.id === editingBlogId)?.viewsCount || 0) : 0,
     };
 
@@ -627,14 +629,11 @@ export default function AdminPortal({
               {oppFormSection === 'seo' && (
                 <div className="space-y-3 animate-fade-in">
                   <div className="space-y-1 text-xs">
-                    <label className="font-bold text-frost-dim">Cover Image URL (optional)</label>
-                    <input
-                      id="opp-image-url"
-                      type="url"
-                      placeholder="https://images.unsplash.com/... — leave blank to auto-use a themed placeholder"
-                      value={oppForm.imageUrl}
-                      onChange={(e) => setOppForm({ ...oppForm, imageUrl: e.target.value })}
-                      className="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-frost placeholder-frost-dim/50"
+                    <label className="font-bold text-frost-dim">Cover Image (optional)</label>
+                    <ImageUploader
+                      value={oppForm.imageUrl || ''}
+                      onChange={(url) => setOppForm({ ...oppForm, imageUrl: url })}
+                      pathPrefix="opportunities"
                     />
                   </div>
 
@@ -902,18 +901,10 @@ export default function AdminPortal({
 
                   {/* Rich Body content editor */}
                   <div className="space-y-1 text-xs">
-                    <label className="font-bold text-frost-dim flex justify-between items-center">
-                      <span>Markdown Article Body</span>
-                      <span className="text-[10px] text-frost-dim/70 font-mono">Supports H2(##), H3(###), Bullet lists(*)</span>
-                    </label>
-                    <textarea
-                      id="blog-content-input"
-                      required
-                      rows={8}
-                      placeholder="Write your article body here..."
-                      value={blogForm.content}
-                      onChange={(e) => setBlogForm({ ...blogForm, content: e.target.value })}
-                      className="w-full bg-white/5 border border-white/10 rounded-lg p-3 font-sans leading-relaxed text-frost placeholder-frost-dim/50"
+                    <label className="font-bold text-frost-dim">Article Body</label>
+                    <RichTextEditor
+                      content={blogForm.content}
+                      onChange={(html) => setBlogForm({ ...blogForm, content: html })}
                     />
                   </div>
                 </div>
@@ -922,15 +913,11 @@ export default function AdminPortal({
               {blogFormSection === 'seo' && (
                 <div className="space-y-3 animate-fade-in">
                   <div className="space-y-1 text-xs">
-                    <label className="font-bold text-frost-dim">Banner Image URL</label>
-                    <input
-                      id="blog-img-url"
-                      type="url"
-                      required
-                      placeholder="https://images.unsplash.com/photo-..."
+                    <label className="font-bold text-frost-dim">Banner Image</label>
+                    <ImageUploader
                       value={blogForm.imageUrl}
-                      onChange={(e) => setBlogForm({ ...blogForm, imageUrl: e.target.value })}
-                      className="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-frost placeholder-frost-dim/50"
+                      onChange={(url) => setBlogForm({ ...blogForm, imageUrl: url })}
+                      pathPrefix="blogs"
                     />
                   </div>
                   <div className="space-y-1 text-xs">
