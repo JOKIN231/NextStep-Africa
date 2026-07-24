@@ -225,19 +225,32 @@ export const db = {
 
   // ---------------- Newsletter ----------------
   subscribeEmail: async (email: string): Promise<{ success: boolean; message: string }> => {
-    if (!supabase) {
-      return { success: false, message: 'Newsletter signup is temporarily unavailable.' };
+    const cleanEmail = email.toLowerCase().trim();
+
+    // Brevo is the real newsletter sender — this is the call that
+    // actually matters for the person receiving anything. It's routed
+    // through our own server (functions/api/newsletter-subscribe.ts) so
+    // the Brevo API key never reaches the browser.
+    let sendResult: { success: boolean; message: string };
+    try {
+      const res = await fetch('/api/newsletter-subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: cleanEmail }),
+      });
+      sendResult = await res.json();
+    } catch {
+      sendResult = { success: false, message: 'Something went wrong. Please try again.' };
     }
-    const { error } = await supabase
-      .from('subscribers')
-      .insert({ email: email.toLowerCase().trim() });
-    if (error) {
-      if (error.code === '23505') {
-        return { success: false, message: 'You are already subscribed to our newsletter!' };
-      }
-      return { success: false, message: 'Something went wrong. Please try again.' };
+
+    // Best-effort local copy for the admin's own Subscribers tab / CSV
+    // export. Never blocks or overrides the result above — the real
+    // newsletter platform is the source of truth for who's subscribed.
+    if (supabase) {
+      supabase.from('subscribers').insert({ email: cleanEmail }).then(() => {});
     }
-    return { success: true, message: 'Thank you for subscribing to NextStep Africa!' };
+
+    return sendResult;
   },
 
   getSubscribers: async (): Promise<Subscriber[]> => {
@@ -256,6 +269,21 @@ export const db = {
       subscribedAt: row.subscribed_at,
       status: row.status,
     }));
+  },
+
+  // ---------------- Image uploads ----------------
+  uploadImage: async (file: Blob, pathPrefix: string): Promise<{ url: string | null; error?: string }> => {
+    if (!supabase) return { url: null, error: 'Supabase is not configured.' };
+    const fileName = `${pathPrefix}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`;
+    const { error } = await supabase.storage.from('public-images').upload(fileName, file, {
+      contentType: 'image/jpeg',
+      upsert: false,
+    });
+    if (error) {
+      return { url: null, error: error.message };
+    }
+    const { data } = supabase.storage.from('public-images').getPublicUrl(fileName);
+    return { url: data.publicUrl };
   },
 
   // ---------------- Contact form ----------------
