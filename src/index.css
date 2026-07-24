@@ -88,6 +88,30 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
 }
 
+/* Tiptap editor content + the same HTML when rendered back out on the
+   public blog page — shared rules so what you see while writing matches
+   what visitors see when they read it. */
+.prose-invert-custom p, .rendered-article-content p { margin-bottom: 0.9em; }
+.prose-invert-custom h2, .rendered-article-content h2 { font-family: var(--font-display); font-weight: 800; font-size: 1.25em; color: #F5F5F4; margin: 1em 0 0.5em; }
+.prose-invert-custom h3, .rendered-article-content h3 { font-family: var(--font-display); font-weight: 700; font-size: 1.1em; color: #F5F5F4; margin: 0.9em 0 0.4em; }
+.prose-invert-custom ul, .rendered-article-content ul { list-style: disc; padding-left: 1.4em; margin-bottom: 0.9em; }
+.prose-invert-custom ol, .rendered-article-content ol { list-style: decimal; padding-left: 1.4em; margin-bottom: 0.9em; }
+.prose-invert-custom li, .rendered-article-content li { margin-bottom: 0.3em; }
+.prose-invert-custom li::marker, .rendered-article-content li::marker { color: #EAE64A; }
+.prose-invert-custom blockquote, .rendered-article-content blockquote { border-left: 3px solid #EAE64A; padding-left: 1em; margin: 1em 0; color: #9CA3AF; font-style: italic; }
+.prose-invert-custom a, .rendered-article-content a { color: #059669; text-decoration: underline; text-underline-offset: 2px; }
+.prose-invert-custom a:hover, .rendered-article-content a:hover { color: #EAE64A; }
+.prose-invert-custom hr, .rendered-article-content hr { border: none; border-top: 1px solid rgba(255,255,255,0.15); margin: 1.5em 0; }
+.prose-invert-custom strong, .rendered-article-content strong { color: #F5F5F4; font-weight: 700; }
+.prose-invert-custom p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: #9CA3AF;
+  opacity: 0.6;
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
 /* Custom styles for rich text or scrollbars */
 ::-webkit-scrollbar {
   width: 8px;
